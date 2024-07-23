@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(SpotifyHome());
+  runApp(MelonMixHome());
 }
 
-class SpotifyHome extends StatelessWidget {
+class MelonMixHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
