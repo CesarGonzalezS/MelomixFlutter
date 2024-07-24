@@ -127,7 +127,7 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(68.0),
             sliver: SliverGrid(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
+                crossAxisCount: 5,
                 crossAxisSpacing: 28.0,
                 mainAxisSpacing: 48.0,
               ),
@@ -152,7 +152,7 @@ class HomeScreen extends StatelessWidget {
                     ],
                   );
                 },
-                childCount: 6, // Adjust the number of items as needed
+                childCount: 10, // Adjust the number of items as needed
               ),
             ),
           ),
