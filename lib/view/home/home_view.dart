@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:melomix/view/splash_login.dart'; // Asegúrate de importar la pantalla de registro
 
 class HomeView extends StatelessWidget {
   final List<String> albumImages = [
@@ -46,6 +47,15 @@ class HomeView extends StatelessWidget {
                 icon: Icon(Icons.search),
                 onPressed: () {
                   // Search action
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.person_add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SplashView()),
+                  );
                 },
               ),
             ],
