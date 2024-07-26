@@ -44,13 +44,13 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'MelomiXXX', // Título de la aplicación.
+      title: 'MelonMix', // Título de la aplicación.
       debugShowCheckedModeBanner: false, // Oculta el banner de depuración.
 
       // Define el tema de la aplicación.
       theme: ThemeData(
         fontFamily: "Circular Std", // Establece la fuente de la aplicación.
-        scaffoldBackgroundColor: TColor.bg, // Color de fondo del scaffold.
+        scaffoldBackgroundColor: Colors.black, // Color de fondo del scaffold.
         textTheme: Theme.of(context).textTheme.apply(
           bodyColor: TColor.primaryText, // Color del texto del cuerpo.
           displayColor: TColor.primaryText, // Color del texto de la pantalla.
