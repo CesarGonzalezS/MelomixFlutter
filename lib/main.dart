@@ -4,6 +4,9 @@ import 'package:melomix/audio_helpers/page_manager.dart';
 import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/view/splash_view.dart';
+import 'package:melomix/view/admin/song_crud_screen.dart';
+import 'package:melomix/view/buscador/search_screen.dart'; // Importa SearchScreen
+
 
 // Punto de entrada principal de la aplicación.
 void main() async {
@@ -63,6 +66,10 @@ class _MyAppState extends State<MyApp> {
 
       // Define la vista inicial de la aplicación.
       home: const SplashView(),
+      routes: {
+        '/songCrud': (context) => const SongCrudScreen(), // Ruta para la pantalla del CRUD de canciones
+        '/search': (context) => SearchScreen(), 
+      },
     );
   }
 }
