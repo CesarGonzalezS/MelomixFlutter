@@ -1,296 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:melomix/audio_helpers/page_manager.dart';
+import 'package:melomix/audio_helpers/service_locator.dart';
+import 'package:melomix/common/color_extension.dart';
+import 'package:melomix/view/splash_view.dart';
 
-void main() {
+// Punto de entrada principal de la aplicación.
+void main() async {
+  // Asegura que la inicialización de Flutter esté completada antes de hacer cualquier otra cosa.
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Configura el Service Locator para la inyección de dependencias.
+  await setupServiceLocator();
+
+  // Lanza la aplicación principal.
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MelonMix',
-      theme: ThemeData.dark(),
-      home: const MainScreen(),
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class _MyAppState extends State<MyApp> {
 
   @override
-  _MainScreenState createState() => _MainScreenState();
-}
+  void initState() {
+    super.initState();
 
-class _MainScreenState extends State<MainScreen> {
-  final List<Genre> genres = [];
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _urlController = TextEditingController();
-  int _currentIndex = 0;
-
-  // Datos de favoritos
-  final List<FavoriteItem> favorites = const [
-    FavoriteItem('Lolo Zouaï', 'Artist', 'assets/lolo_zouai.jpg'),
-    FavoriteItem('Lana Del Rey', 'Artist', 'assets/lana_del_rey.jpg'),
-    FavoriteItem('Front Left', 'Playlist', 'assets/front_left.jpg'),
-    FavoriteItem('Marvin Gaye', 'Artist', 'assets/marvin_gaye.jpg'),
-  ];
-
-  // Función para agregar un nuevo género
-  void _addGenre() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Agregar Género'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nombre'),
-              ),
-              TextField(
-                controller: _urlController,
-                decoration: const InputDecoration(labelText: 'URL de la Imagen'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Agregar'),
-              onPressed: () {
-                setState(() {
-                  if (_urlController.text.isNotEmpty && _nameController.text.isNotEmpty) {
-                    genres.add(Genre(_nameController.text, _urlController.text));
-                    _nameController.clear();
-                    _urlController.clear();
-                  }
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    // Inicializa el PageManager al inicio de la aplicación.
+    getIt<PageManager>().init();
   }
 
-  // Función para editar un género existente
-  void _editGenre(int index) {
-    _nameController.text = genres[index].name;
-    _urlController.text = genres[index].imageUrl;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Editar Género'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nombre'),
-              ),
-              TextField(
-                controller: _urlController,
-                decoration: const InputDecoration(labelText: 'URL de la Imagen'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Guardar'),
-              onPressed: () {
-                setState(() {
-                  genres[index] = Genre(_nameController.text, _urlController.text);
-                  _nameController.clear();
-                  _urlController.clear();
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  @override
+  void dispose() {
+    // Limpia los recursos y disposables cuando el widget es destruido.
+    super.dispose();
+    getIt<PageManager>().dispose();
   }
 
-  // Función para eliminar un género
-  void _deleteGenre(int index) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmar Eliminación'),
-          content: const Text('¿Estás seguro de que quieres eliminar la categoría?'),
-          actions: [
-            TextButton(
-              child: const Text('Cancelar'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: const Text('Eliminar'),
-              onPressed: () {
-                setState(() {
-                  genres.removeAt(index);
-                });
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      title: 'MelomiXXX', // Título de la aplicación.
+      debugShowCheckedModeBanner: false, // Oculta el banner de depuración.
 
-  // Función para construir la lista de géneros
-  Widget _buildGenresList() {
-    return Row(
-      children: [
-        const Spacer(),
-        Expanded(
-          flex: 8,
-          child: ListView.builder(
-            itemCount: genres.length,
-            itemBuilder: (context, index) {
-              return Dismissible(
-                key: Key(genres[index].name),
-                onDismissed: (direction) {
-                  setState(() {
-                    genres.removeAt(index);
-                  });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${genres[index].name} eliminado')),
-                  );
-                },
-                background: Container(color: Colors.red),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: NetworkImage(genres[index].imageUrl),
-                  ),
-                  title: Text(genres[index].name),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        onPressed: () => _editGenre(index),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _deleteGenre(index),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
+      // Define el tema de la aplicación.
+      theme: ThemeData(
+        fontFamily: "Circular Std", // Establece la fuente de la aplicación.
+        scaffoldBackgroundColor: TColor.bg, // Color de fondo del scaffold.
+        textTheme: Theme.of(context).textTheme.apply(
+          bodyColor: TColor.primaryText, // Color del texto del cuerpo.
+          displayColor: TColor.primaryText, // Color del texto de la pantalla.
         ),
-        const Spacer(),
-      ],
-    );
-  }
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: TColor.primary, // Color base para el esquema de colores.
+        ),
+        useMaterial3: false, // Desactiva el uso de Material Design 3.
+      ),
 
-  // Función para construir la lista de favoritos
-  Widget _buildFavoritesList() {
-    return ListView.builder(
-      itemCount: favorites.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: AssetImage(favorites[index].imageUrl),
-          ),
-          title: Text(favorites[index].title),
-          subtitle: Text(favorites[index].subtitle),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('MelonMix'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _addGenre,
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _currentIndex = 0;
-                    });
-                  },
-                  child: const Text('Géneros'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _currentIndex = 1;
-                    });
-                  },
-                  child: const Text('Favoritos'),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: _currentIndex == 0 ? _buildGenresList() : _buildFavoritesList(),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Buscador',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favoritos',
-          ),
-        ],
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-      ),
+      // Define la vista inicial de la aplicación.
+      home: const SplashView(),
     );
   }
 }
