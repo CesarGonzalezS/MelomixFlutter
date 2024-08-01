@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:melomix/global/helpers/apis/api_service_loggin.dart';  // Asegúrate de usar la ruta correcta
 import 'package:melomix/view/register/RegisterScreen.dart';
+import 'package:melomix/view/forgot_password/PasswordRecoveryScreen.dart'; // Ruta a la pantalla de recuperación de contraseña
 import 'package:melomix/common_widget/animated_logo.dart';
 
 class SplashView extends StatefulWidget {
@@ -15,7 +15,7 @@ class _SplashViewState extends State<SplashView> {
   bool _isLoading = false;
   String _errorMessage = '';
 
-  final ApiService _apiService = ApiService();
+  //final ApiService _apiService = ApiService(); // Comentar esta línea
 
   // Método para mostrar un diálogo de alerta
   void _showAlert(String title, String message) {
@@ -56,14 +56,14 @@ class _SplashViewState extends State<SplashView> {
       });
 
       try {
-        final success = await _apiService.login(_email, _password);
+        //final success = await _apiService.login(_email, _password); // Comentar esta línea
 
-        if (success) {
-          // Aquí navega a la pantalla principal si el login es exitoso
-          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-        } else {
-          _showAlert('Error', 'El inicio de sesión falló. Verifique sus credenciales.');
-        }
+        //if (success) {
+        // Aquí navega a la pantalla principal si el login es exitoso
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        //} else {
+        _showAlert('Error', 'El inicio de sesión falló. Verifique sus credenciales.');
+        //}
       } catch (e) {
         _showAlert('Error', 'Hubo un problema con la conexión. Inténtalo de nuevo.');
       } finally {
@@ -89,7 +89,7 @@ class _SplashViewState extends State<SplashView> {
               SizedBox(height: 10),
               // Texto de bienvenida
               Text(
-                'Bienvenido a Spotify Clone',
+                'Bienvenido a MeloMix',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -212,6 +212,30 @@ class _SplashViewState extends State<SplashView> {
                         },
                         child: Text(
                           'Regístrate',
+                          style: TextStyle(
+                            color: Colors.green,
+                            fontSize: 18,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      // Texto y botón para recuperar contraseña
+                      Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => PasswordRecoveryScreen()),
+                          );
+                        },
+                        child: Text(
+                          'Recuperar contraseña',
                           style: TextStyle(
                             color: Colors.green,
                             fontSize: 18,
