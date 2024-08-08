@@ -1,3 +1,4 @@
+// email_verification.dart
 import 'package:flutter/material.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
@@ -15,7 +16,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   bool _isLoading = false;
   String _errorMessage = '';
 
-  // Método para mostrar un diálogo de alerta
   void _showAlert(String title, String message) {
     showDialog(
       context: context,
@@ -43,18 +43,12 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
         _errorMessage = '';
       });
 
-      // Simulación del envío del código de verificación al servidor y espera de la respuesta
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(Duration(seconds: 2)); // Simula la verificación
 
-      // Aquí iría la lógica para enviar el código de verificación al servidor
-      // y manejar la respuesta. Vamos a simular una verificación exitosa.
-
-      // Supongamos que la verificación fue exitosa:
       setState(() {
         _isLoading = false;
       });
 
-      // Mostrar un mensaje de éxito
       _showAlert('Éxito', 'Su correo electrónico ha sido verificado exitosamente.');
     }
   }
@@ -73,7 +67,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Texto de bienvenida
               Text(
                 'Verifique su correo electrónico',
                 style: TextStyle(
@@ -83,16 +76,14 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                 ),
               ),
               SizedBox(height: 10),
-              // Instrucción para el usuario
               Text(
                 'Hemos enviado un código de verificación a ${widget.email}. Por favor, ingréselo a continuación.',
                 style: TextStyle(color: Colors.white, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 20),
-              // Contenedor para el formulario de verificación de código
               Container(
-                constraints: BoxConstraints(maxWidth: 600, minHeight: 200), // Controla el ancho máximo del contenedor
+                constraints: BoxConstraints(maxWidth: 600, minHeight: 200),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(15),
@@ -110,7 +101,6 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      // Campo de texto para el código de verificación
                       TextFormField(
                         style: TextStyle(color: Colors.white),
                         decoration: InputDecoration(
@@ -136,27 +126,25 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                         },
                       ),
                       SizedBox(height: 20),
-                      // Botón de verificación
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green, // Color del botón
+                          backgroundColor: Colors.green,
                           padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                           textStyle: TextStyle(fontSize: 18),
                         ),
                         onPressed: _verifyCode,
                         child: _isLoading
-                            ? CircularProgressIndicator() // Mostrar indicador de carga mientras se verifica el código
+                            ? CircularProgressIndicator()
                             : Text('Verificar'),
                       ),
                       SizedBox(height: 10),
-                      // Mensaje de error
                       if (_errorMessage.isNotEmpty)
                         Text(
                           _errorMessage,
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          softWrap: true, // Ajustar el texto en caso de que sea demasiado largo para la pantalla
+                          softWrap: true,
                           style: TextStyle(color: Colors.red, fontSize: 16),
                         ),
                     ],

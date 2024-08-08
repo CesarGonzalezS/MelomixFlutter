@@ -1,12 +1,10 @@
+// register_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:melomix/services/user/api_service_create_user.dart';
 import 'package:melomix/data/model/user_model.dart';
-import 'package:melomix/view/confirm_sign_up/email_verification.dart';
-import 'package:melomix/view/forgot_password/PasswordRecoveryScreen.dart';
-import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common_widget/animated_logo.dart';
-import 'package:melomix/view/splash_view.dart';
+import 'package:melomix/routes.dart';
 import 'package:intl/intl.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -20,7 +18,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String _email = '';
   String _password = '';
   String _confirmPassword = '';
-  String _dateJoined = '';
+  String _dateOfBirth = '';
   bool _isLoading = false;
   String _errorMessage = '';
   TextEditingController _dateController = TextEditingController();
@@ -58,11 +56,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       final user = User_model(
-        userId: '',  // No se proporciona userId al registrar el usuario
+        userId: '',
         username: _username,
         email: _email,
         password: _password,
-        dateJoined: _dateJoined,
+        dateJoined: _dateOfBirth,
       );
 
       try {
@@ -70,10 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() {
           _isLoading = false;
         });
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => EmailVerificationScreen(email: _email)),
-        );
+        Get.toNamed(AppRoutes.emailVerification, arguments: {'email': _email});
       } catch (e) {
         setState(() {
           _isLoading = false;
@@ -100,7 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 'Registro de Usuario',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -124,7 +119,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      // Campo de nombre de usuario
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Nombre de usuario',
@@ -148,8 +142,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                       SizedBox(height: 10),
-
-                      // Campo de correo electrónico
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Correo electrónico',
@@ -174,8 +166,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                       SizedBox(height: 10),
-
-                      // Campo de contraseña
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Contraseña',
@@ -200,8 +190,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                       SizedBox(height: 10),
-
-                      // Campo de confirmación de contraseña
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: 'Confirmar contraseña',
@@ -226,12 +214,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         },
                       ),
                       SizedBox(height: 10),
-
-                      // Campo de fecha de ingreso
                       TextFormField(
                         controller: _dateController,
                         decoration: InputDecoration(
-                          labelText: 'Fecha de ingreso',
+                          labelText: 'Fecha de nacimiento',
                           labelStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(),
                           focusedBorder: OutlineInputBorder(
@@ -244,22 +230,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           DateTime? pickedDate = await showDatePicker(
                             context: context,
                             initialDate: DateTime.now(),
-                            firstDate: DateTime(2000),
+                            firstDate: DateTime(1900),
                             lastDate: DateTime.now(),
                           );
 
                           if (pickedDate != null) {
                             String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
                             setState(() {
-                              _dateJoined = formattedDate;
+                              _dateOfBirth = formattedDate;
                               _dateController.text = formattedDate;
                             });
                           }
                         },
                       ),
                       SizedBox(height: 20),
-
-                      // Botón de registro
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -272,32 +256,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             : Text('Registrarse'),
                       ),
                       SizedBox(height: 10),
-
-                      // Botón de recuperación de contraseña
                       TextButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => PasswordRecoveryScreen()),
-                          );
+                          Get.toNamed(AppRoutes.passwordRecovery);
                         },
                         child: Text(
-                          'Olvidaste tu contraseña?',
+                          '¿Olvidaste tu contraseña?',
                           style: TextStyle(color: Colors.green),
                         ),
                       ),
                       SizedBox(height: 10),
-
-                      // Botón para iniciar sesión
                       TextButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => SplashView()),
-                          );
+                          Get.offNamed(AppRoutes.splash);
                         },
                         child: Text(
-                          'Ya tienes una cuenta? Iniciar sesión',
+                          '¿Ya tienes una cuenta? Iniciar sesión',
                           style: TextStyle(color: Colors.green),
                         ),
                       ),

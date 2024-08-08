@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart'; // Asegúrate de importar GetX
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/common_widget/icon_text_row.dart';
 import 'package:melomix/common_widget/mini_player_view.dart';
 import 'package:melomix/view/home/home_view.dart';
+import 'package:melomix/routes.dart'; // Importa tu archivo de rutas
 
 class MainTabView extends StatefulWidget {
   const MainTabView({super.key});
@@ -21,7 +22,7 @@ class _MainTabViewState extends State<MainTabView>
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 3, vsync: this); // Adjust length to the number of tabs
+    controller = TabController(length: 3, vsync: this);
 
     controller?.addListener(() {
       setState(() {
@@ -140,50 +141,8 @@ class _MainTabViewState extends State<MainTabView>
               leading: Icon(Icons.login),
               title: Text('Register'),
               onTap: () {
-                Navigator.pop(context); // Close the drawer
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Register'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Username',
-                            ),
-                          ),
-                          TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                            ),
-                          ),
-                          TextField(
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                            ),
-                            obscureText: true,
-                          ),
-                        ],
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Register action
-                          },
-                          child: Text('Register'),
-                        ),
-                      ],
-                    );
-                  },
-                );
+                Navigator.pop(context); // Cierra el drawer
+                Get.toNamed(AppRoutes.register); // Navega a la pantalla de registro
               },
             ),
           ],
@@ -198,7 +157,7 @@ class _MainTabViewState extends State<MainTabView>
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 leading: IconButton(
-                  icon: Icon(Icons.search),
+                  icon: Icon(Icons.menu), // Cambia el icono de búsqueda a menú
                   onPressed: () {
                     _scaffoldKey.currentState?.openDrawer();
                   },

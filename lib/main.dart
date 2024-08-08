@@ -1,10 +1,10 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:melomix/audio_helpers/page_manager.dart';
 import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common/color_extension.dart';
-import 'package:melomix/view/splash_view.dart';
-
+import 'package:melomix/routes.dart'; // Importa el archivo de rutas
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,13 +41,14 @@ class _MyAppState extends State<MyApp> {
         fontFamily: "Circular Std",
         scaffoldBackgroundColor: TColor.bg,
         textTheme: Theme.of(context).textTheme.apply(
-          bodyColor: TColor.primaryText,
-          displayColor: TColor.primaryText,
-        ),
+              bodyColor: TColor.primaryText,
+              displayColor: TColor.primaryText,
+            ),
         colorScheme: ColorScheme.fromSeed(seedColor: TColor.primary),
         useMaterial3: false,
       ),
-      home: const SplashView(),
+      initialRoute: AppRoutes.splash, // Usa la ruta inicial definida
+      getPages: AppRoutes.routes, // Usa las rutas definidas
     );
   }
 }
