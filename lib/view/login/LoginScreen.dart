@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart'; // Importa GetX para la navegación
+import 'package:melomix/routes.dart'; // Importa tus rutas
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -18,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
-            Navigator.of(context).pop();
+            Get.back(); // Usa GetX para volver a la pantalla anterior
           },
         ),
       ),
@@ -55,10 +57,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
                       // Aquí puedes añadir la lógica para iniciar sesión
-                      Navigator.of(context).pop();
+                      Get.back(); // Vuelve a la pantalla anterior después de iniciar sesión
                     }
                   },
                   child: Text('Iniciar Sesión'),
+                ),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Get.toNamed(AppRoutes.main); // Navega a la pantalla principal sin iniciar sesión
+                  },
+                  child: Text('Ir al Home'),
                 ),
               ],
             ),
