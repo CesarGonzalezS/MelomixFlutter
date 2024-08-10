@@ -6,7 +6,7 @@ import 'package:melomix/config/config.dart';
 class ApiServices {
   Future<void> createUser(User_model user) async {
     final response = await http.post(
-      Uri.parse(Config.createUserEndpoint),
+      Uri.parse(Config.sing_upEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

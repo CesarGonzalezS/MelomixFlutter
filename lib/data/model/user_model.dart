@@ -6,7 +6,7 @@ class User_model {
   final String dateJoined;
 
   User_model({
-    this.userId = '',  // Hacer que userId sea opcional
+    this.userId = '', // Hacer que userId sea opcional
     required this.username,
     required this.email,
     required this.password,
@@ -16,7 +16,7 @@ class User_model {
   // Convertir de JSON a una instancia de User_model
   factory User_model.fromJson(Map<String, dynamic> json) {
     return User_model(
-      userId: json['userId'] ?? '',  // Manejar caso en que userId no esté presente
+      userId: json['userId'] ?? '', // Manejar caso en que userId no esté presente
       username: json['username'] ?? '',
       email: json['email'] ?? '',
       password: json['password'] ?? '',
