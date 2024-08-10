@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:melomix/data/model/user_model.dart';
-import 'package:melomix/services/user/api_service_create_user.dart'; // Importa ApiServices
+import 'package:melomix/services/api_services.dart'; // Asegúrate de que este sea el nombre correcto del archivo
 import 'user_state.dart';
 
 class UserCubit extends Cubit<UserState> {
-  final ApiServices apiServices;
+  final ApiServices apiServices; // Define apiServices como un campo de la clase
 
   UserCubit({required this.apiServices}) : super(UserInitial());
 
@@ -12,12 +12,9 @@ class UserCubit extends Cubit<UserState> {
     try {
       emit(UserLoading());
       await apiServices.createUser(user);
-      final users = await apiServices.getAllUsers(); // Usa ApiServices
-      emit(UserSuccess(users: users));
+      emit(UserSuccess(users: [])); // Si necesitas manejar la lista de usuarios
     } catch (e) {
       emit(UserError(message: e.toString()));
     }
   }
-
-
 }

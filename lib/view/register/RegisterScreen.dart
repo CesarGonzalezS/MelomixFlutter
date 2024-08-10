@@ -1,285 +1,101 @@
-// register_screen.dart
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:melomix/services/user/api_service_create_user.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:melomix/presentation/cubits/user_cubit.dart';
+import 'package:melomix/services/api_services.dart';
 import 'package:melomix/data/model/user_model.dart';
-import 'package:melomix/common_widget/animated_logo.dart';
 import 'package:melomix/routes.dart';
-import 'package:intl/intl.dart';
+import 'package:melomix/presentation/cubits/user_state.dart';
+import 'package:get/get.dart'; // Importa GetX para la navegación
 
-class RegisterScreen extends StatefulWidget {
-  @override
-  _RegisterScreenState createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
+class RegisterScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
-  String _username = '';
-  String _email = '';
-  String _password = '';
-  String _confirmPassword = '';
-  String _dateOfBirth = '';
-  bool _isLoading = false;
-  String _errorMessage = '';
-  TextEditingController _dateController = TextEditingController();
-
-  void _showAlert(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: <Widget>[
-            TextButton(
-              child: Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _register() async {
-    if (_formKey.currentState!.validate()) {
-      if (_password != _confirmPassword) {
-        _showAlert('Error', 'Las contraseñas no coinciden.');
-        return;
-      }
-
-      setState(() {
-        _isLoading = true;
-        _errorMessage = '';
-      });
-
-      final user = User_model(
-        userId: '',
-        username: _username,
-        email: _email,
-        password: _password,
-        dateJoined: _dateOfBirth,
-      );
-
-      try {
-        await ApiServices().createUser(user);
-        setState(() {
-          _isLoading = false;
-        });
-        Get.toNamed(AppRoutes.emailVerification, arguments: {'email': _email});
-      } catch (e) {
-        setState(() {
-          _isLoading = false;
-          _errorMessage = e.toString();
-        });
-        _showAlert('Error', 'Hubo un problema al registrar el usuario.');
-      }
-    }
-  }
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(30.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              AnimatedLogo(),
-              SizedBox(height: 10),
-              Text(
-                'Registro de Usuario',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 5),
-              Container(
-                constraints: BoxConstraints(maxWidth: 600, minHeight: 300),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      spreadRadius: 5,
-                      blurRadius: 15,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                padding: EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Nombre de usuario',
-                          labelStyle: TextStyle(color: Colors.white),
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        style: TextStyle(color: Colors.white),
-                        onChanged: (value) {
-                          setState(() {
-                            _username = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu nombre de usuario';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Correo electrónico',
-                          labelStyle: TextStyle(color: Colors.white),
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        style: TextStyle(color: Colors.white),
-                        keyboardType: TextInputType.emailAddress,
-                        onChanged: (value) {
-                          setState(() {
-                            _email = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty || !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                            return 'Por favor ingresa un correo electrónico válido';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          labelStyle: TextStyle(color: Colors.white),
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        style: TextStyle(color: Colors.white),
-                        obscureText: true,
-                        onChanged: (value) {
-                          setState(() {
-                            _password = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa tu contraseña';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Confirmar contraseña',
-                          labelStyle: TextStyle(color: Colors.white),
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        style: TextStyle(color: Colors.white),
-                        obscureText: true,
-                        onChanged: (value) {
-                          setState(() {
-                            _confirmPassword = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor confirma tu contraseña';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 10),
-                      TextFormField(
-                        controller: _dateController,
-                        decoration: InputDecoration(
-                          labelText: 'Fecha de nacimiento',
-                          labelStyle: TextStyle(color: Colors.white),
-                          border: OutlineInputBorder(),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.green),
-                          ),
-                        ),
-                        style: TextStyle(color: Colors.white),
-                        readOnly: true,
-                        onTap: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(1900),
-                            lastDate: DateTime.now(),
-                          );
-
-                          if (pickedDate != null) {
-                            String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
-                            setState(() {
-                              _dateOfBirth = formattedDate;
-                              _dateController.text = formattedDate;
-                            });
-                          }
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                          textStyle: TextStyle(fontSize: 18),
-                        ),
-                        onPressed: _register,
-                        child: _isLoading
-                            ? CircularProgressIndicator()
-                            : Text('Registrarse'),
-                      ),
-                      SizedBox(height: 10),
-                      TextButton(
-                        onPressed: () {
-                          Get.toNamed(AppRoutes.passwordRecovery);
-                        },
-                        child: Text(
-                          '¿Olvidaste tu contraseña?',
-                          style: TextStyle(color: Colors.green),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      TextButton(
-                        onPressed: () {
-                          Get.offNamed(AppRoutes.splash);
-                        },
-                        child: Text(
-                          '¿Ya tienes una cuenta? Iniciar sesión',
-                          style: TextStyle(color: Colors.green),
-                        ),
-                      ),
-                    ],
+    return BlocProvider(
+      create: (context) => UserCubit(apiServices: ApiServices()),
+      child: Scaffold(
+        appBar: AppBar(title: Text('Registro')),
+        body: BlocListener<UserCubit, UserState>(
+          listener: (context, state) {
+            if (state is UserLoading) {
+              // Muestra un indicador de carga
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              );
+            } else if (state is UserSuccess) {
+              // Cerrar el diálogo de carga
+              Navigator.pop(context);
+              // Mostrar mensaje de éxito
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Registro exitoso')),
+              );
+              // Navega a la siguiente pantalla
+              Get.toNamed(AppRoutes.emailVerification, arguments: {'email': _emailController.text});
+            } else if (state is UserError) {
+              // Muestra el mensaje de error
+              Navigator.pop(context); // Cerrar el diálogo de carga
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(labelText: 'Username'),
+                    validator: (value) => value!.isEmpty ? 'Required' : null,
                   ),
-                ),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(labelText: 'Email'),
+                    validator: (value) => value!.isEmpty ? 'Please enter email' : null,
+                  ),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                    validator: (value) => value!.isEmpty ? 'Please enter password' : null,
+                  ),
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(labelText: 'Confirm Password'),
+                    obscureText: true,
+                    validator: (value) => value != _passwordController.text ? 'Passwords do not match' : null,
+                  ),
+                  SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        final user = User_model(
+                          username: _usernameController.text,
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                          dateJoined: DateTime.now().toIso8601String(),
+                        );
+                        context.read<UserCubit>().createUser(user);
+                      }
+                    },
+                    child: Text('Register'),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
