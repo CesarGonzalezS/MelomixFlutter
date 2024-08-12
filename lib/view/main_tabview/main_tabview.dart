@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:melomix/view/splash_login.dart';
+
 import 'package:get/get.dart'; // Asegúrate de importar GetX
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/common_widget/icon_text_row.dart';
@@ -13,11 +15,10 @@ class MainTabView extends StatefulWidget {
   State<MainTabView> createState() => _MainTabViewState();
 }
 
-class _MainTabViewState extends State<MainTabView>
-    with SingleTickerProviderStateMixin {
+class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStateMixin {
+  bool _isMenuExpanded = false; // Controla si el menú está expandido
   TabController? controller;
   int selectTab = 0;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -39,172 +40,147 @@ class _MainTabViewState extends State<MainTabView>
 
   @override
   Widget build(BuildContext context) {
-    var media = MediaQuery.sizeOf(context);
-
     return Scaffold(
-      key: _scaffoldKey,
-      drawer: Drawer(
-        backgroundColor: const Color(0xff10121D),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            SizedBox(
-              height: 240,
-              child: DrawerHeader(
-                decoration: BoxDecoration(
-                  color: TColor.primaryText.withOpacity(0.03),
-                ),
-                child: Column(
-                  children: [
-                    Image.asset(
-                      "assets/img/app_logo.png",
-                      width: media.width * 0.17,
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Column(
-                          children: const [
-                            Text(
-                              "328\nSongs",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Color(0xffC1C0C0), fontSize: 12),
-                            )
-                          ],
-                        ),
-                        Column(
-                          children: const [
-                            Text(
-                              "52\nAlbums",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Color(0xffC1C0C0), fontSize: 12),
-                            )
-                          ],
-                        ),
-                        Column(
-                          children: const [
-                            Text(
-                              "87\nArtists",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Color(0xffC1C0C0), fontSize: 12),
-                            )
-                          ],
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-            IconTextRow(
-              title: "Themes",
-              icon: "assets/img/m_theme.png",
-              onTap: () {},
-            ),
-            IconTextRow(
-              title: "Ringtone Cutter",
-              icon: "assets/img/m_ring_cut.png",
-              onTap: () {},
-            ),
-            IconTextRow(
-              title: "Sleep Timer",
-              icon: "assets/img/m_sleep_timer.png",
-              onTap: () {},
-            ),
-            IconTextRow(
-              title: "Equalizer",
-              icon: "assets/img/m_eq.png",
-              onTap: () {},
-            ),
-            IconTextRow(
-              title: "Driver Mode",
-              icon: "assets/img/img3.jpg",
-              onTap: () {},
-            ),
-            IconTextRow(
-              title: "Hidden Folders",
-              icon: "assets/img/img2.jpg",
-              onTap: () {},
-            ),
-            IconTextRow(
-              title: "Scan Media",
-              icon: "assets/img/img1.jpg",
-              onTap: () {},
-            ),
-            ListTile(
-              leading: Icon(Icons.login),
-              title: Text('Register'),
-              onTap: () {
-                Navigator.pop(context); // Cierra el drawer
-                Get.toNamed(AppRoutes.register); // Navega a la pantalla de registro
-              },
-            ),
-          ],
-        ),
-      ),
-      body: Stack(
-        alignment: Alignment.bottomCenter,
+      body: Row(
         children: [
-          Column(
-            children: [
-              AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                leading: IconButton(
-                  icon: Icon(Icons.menu), // Cambia el icono de búsqueda a menú
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            width: _isMenuExpanded ? 250.0 : 70.0, // Ancho del menú
+            color: const Color(0xff10121D), // Color de fondo del menú
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    _isMenuExpanded ? Icons.arrow_back : Icons.menu,
+                    color: Colors.white,
+                  ),
                   onPressed: () {
-                    _scaffoldKey.currentState?.openDrawer();
+                    setState(() {
+                      _isMenuExpanded = !_isMenuExpanded;
+                    });
                   },
                 ),
-                title: Text('App Name'),
-              ),
-              Expanded(
-                child: TabBarView(
-                  controller: controller,
-                  children: [
-                    HomeView(),
-                    Container(), // Placeholder for Search view
-                    Container(), // Placeholder for Library view
-                  ],
+           
+                IconTextRow(
+                  title: "Driver Mode",
+                  icon: "assets/img/img3.jpg",
+                  onTap: () {},
+                  isExpanded: _isMenuExpanded,
+                  
                 ),
+                IconTextRow(
+                  title: "Hidden Folders",
+                  icon: "assets/img/img2.jpg",
+                  onTap: () {},
+                  isExpanded: _isMenuExpanded,
+                ),
+                IconTextRow(
+                  title: "Scan Media",
+                  icon: "assets/img/img1.jpg",
+                  onTap: () {},
+                  isExpanded: _isMenuExpanded,
+                ),
+                ListTile(
+                  leading: Icon(Icons.login, color: Colors.white),
+                  title: _isMenuExpanded
+                      ? Text('Register', style: TextStyle(color: Colors.white))
+                      : null,
+                  onTap: () {
+                    Get.toNamed(AppRoutes.register); // Navega a la pantalla de registro
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.person_add, color: Colors.white),
+                  title: _isMenuExpanded
+                      ? Text('Register', style: TextStyle(color: Colors.white))
+                      : null,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SplashView()), // Navega a SplashView
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Scaffold(
+              body: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Column(
+                    children: [
+          
+                      Expanded(
+                        child: TabBarView(
+                          controller: controller,
+                          children: [
+                            HomeView(),
+                            Container(), // Placeholder for Search view
+                            Container(), // Placeholder for Library view
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  MiniPlayerView(),
+                ],
               ),
-            ],
+              bottomNavigationBar: BottomNavigationBar(
+                items: const <BottomNavigationBarItem>[
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.search),
+                    label: 'Search',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.library_music),
+                    label: 'Library',
+                  ),
+                ],
+                currentIndex: selectTab,
+                selectedItemColor: Color.fromARGB(255, 160, 5, 5),
+                unselectedItemColor: Colors.white,
+                backgroundColor: Color.fromARGB(255, 15, 15, 15),
+                onTap: (index) {
+                  setState(() {
+                    selectTab = index;
+                    controller?.animateTo(index);
+                  });
+                },
+              ),
+            ),
           ),
-          MiniPlayerView(),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.library_music),
-            label: 'Library',
-          ),
-        ],
-        currentIndex: selectTab,
-        selectedItemColor: Color.fromARGB(255, 160, 5, 5),
-        unselectedItemColor: Colors.white,
-        backgroundColor: Color.fromARGB(255, 15, 15, 15),
-        onTap: (index) {
-          setState(() {
-            selectTab = index;
-            controller?.animateTo(index);
-          });
-        },
-      ),
+    );
+  }
+}
+
+class IconTextRow extends StatelessWidget {
+  final String title;
+  final String icon;
+  final bool isExpanded;
+  final VoidCallback onTap;
+
+  const IconTextRow({
+    required this.title,
+    required this.icon,
+    required this.onTap,
+    this.isExpanded = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Image.asset(icon, width: 24, color: Colors.white),
+      title: isExpanded ? Text(title, style: TextStyle(color: Colors.white)) : null,
+      onTap: onTap,
     );
   }
 }

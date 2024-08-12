@@ -10,12 +10,12 @@ class AnimatedLogo extends StatefulWidget {
 class _AnimatedLogoState extends State<AnimatedLogo> with TickerProviderStateMixin {
   final DecorationTween decorationTween = DecorationTween(
     begin: BoxDecoration(
-      color: const Color(0xFFFFFFFF),
+      color: const Color(0xFF000000),
       border: Border.all(style: BorderStyle.none),
       borderRadius: BorderRadius.circular(60.0),
       boxShadow: const <BoxShadow>[
         BoxShadow(
-          color: Color(0x66666666),
+          color: Color.fromARGB(102, 12, 12, 12),
           blurRadius: 10.0,
           spreadRadius: 3.0,
           offset: Offset(0, 6.0),
@@ -47,8 +47,8 @@ class _AnimatedLogoState extends State<AnimatedLogo> with TickerProviderStateMix
     return DecoratedBoxTransition(
       decoration: decorationTween.animate(_controller),
       child: Container(
-        width: 200,
-        height: 200,
+        width: 180,
+        height: 180,
         child: Image.asset(
           'assets/img/logomelomix.jpg',
         ),
