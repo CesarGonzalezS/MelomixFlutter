@@ -5,6 +5,7 @@ import 'package:melomix/config/config.dart';
 
 class ApiServices {
   Future<void> createUser(User_model user) async {
+    print('API createUser called'); // Log para verificar que la API se llama
     final response = await http.post(
       Uri.parse(Config.sing_upEndpoint),
       headers: <String, String>{
@@ -13,8 +14,13 @@ class ApiServices {
       body: jsonEncode(user.toMap()),
     );
 
+    print('Response status: ${response.statusCode}'); // Log para verificar el estado de la respuesta
+
     if (response.statusCode != 200) {
+      print('Error: ${response.body}'); // Log de error si el código de estado no es 200
       throw Exception('Failed to create user');
+    } else {
+      print('User created successfully'); // Log de éxito
     }
   }
 
