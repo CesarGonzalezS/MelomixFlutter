@@ -12,7 +12,7 @@ class SplashViewMode extends GetxController {
   // Método para cargar la vista de manera asíncrona.
   // Espera 3 segundos antes de navegar a la vista principal (MainTabView).
   void loadView() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
     Get.to(() => const MainTabView());
   }
 

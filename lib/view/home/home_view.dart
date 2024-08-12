@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:melomix/view/splash_login.dart'; // Asegúrate de importar la pantalla de registro
 
 class HomeView extends StatelessWidget {
   final List<String> albumImages = [
@@ -8,6 +9,12 @@ class HomeView extends StatelessWidget {
     'assets/img/img3.jpg',
     'assets/img/img4.jpg',
     'assets/img/img5.jpg',
+  ];
+
+  final List<Map<String, String>> users = [
+    {'ID': '1', 'Nombre': 'Alice', 'Email': 'alice@example.com'},
+    {'ID': '2', 'Nombre': 'Bob', 'Email': 'bob@example.com'},
+    {'ID': '3', 'Nombre': 'Charlie', 'Email': 'charlie@example.com'},
   ];
 
   @override
@@ -46,6 +53,15 @@ class HomeView extends StatelessWidget {
                 icon: Icon(Icons.search),
                 onPressed: () {
                   // Search action
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.person_add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SplashView()),
+                  );
                 },
               ),
             ],
@@ -134,6 +150,39 @@ class HomeView extends StatelessWidget {
                   );
                 },
                 childCount: 6,
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Users',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  DataTable(
+                    columns: const [
+                      DataColumn(label: Text('ID', style: TextStyle(color: Colors.white))),
+                      DataColumn(label: Text('Nombre', style: TextStyle(color: Colors.white))),
+                      DataColumn(label: Text('Email', style: TextStyle(color: Colors.white))),
+                    ],
+                    rows: users.map((user) {
+                      return DataRow(cells: [
+                        DataCell(Text(user['ID']!, style: TextStyle(color: Colors.white))),
+                        DataCell(Text(user['Nombre']!, style: TextStyle(color: Colors.white))),
+                        DataCell(Text(user['Email']!, style: TextStyle(color: Colors.white))),
+                      ]);
+                    }).toList(),
+                  ),
+                ],
               ),
             ),
           ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart'; // Asegúrate de importar GetX
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/common_widget/icon_text_row.dart';
 import 'package:melomix/common_widget/mini_player_view.dart';
 import 'package:melomix/view/home/home_view.dart';
-import 'package:melomix/view/admin/song_crud_screen.dart';
+import 'package:melomix/view/buscador/search_screen.dart'; // Asegúrate de importar SearchScreen
+import 'package:melomix/routes.dart'; // Importa tu archivo de rutas
 
 class MainTabView extends StatefulWidget {
   const MainTabView({super.key});
@@ -22,7 +23,7 @@ class _MainTabViewState extends State<MainTabView>
   @override
   void initState() {
     super.initState();
-    controller = TabController(length: 3, vsync: this); // Adjust length to the number of tabs
+    controller = TabController(length: 3, vsync: this);
 
     controller?.addListener(() {
       setState(() {
@@ -38,89 +39,173 @@ class _MainTabViewState extends State<MainTabView>
   }
 
   @override
-Widget build(BuildContext context) {
-  var media = MediaQuery.sizeOf(context);
+  Widget build(BuildContext context) {
+    var media = MediaQuery.sizeOf(context);
 
-  return Scaffold(
-    key: _scaffoldKey,
-    drawer: Drawer(
-      backgroundColor: const Color(0xff10121D),
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          // (Tu código para el drawer aquí...)
-        ],
-      ),
-    ),
-    body: Stack(
-      alignment: Alignment.bottomCenter,
-      children: [
-        Column(
+    return Scaffold(
+      key: _scaffoldKey,
+      drawer: Drawer(
+        backgroundColor: const Color(0xff10121D),
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: [
-            AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/search'); // Navega a la pantalla de búsqueda
-                },
-              ),
-              title: Text('App Name'),
-              actions: [
-                IconButton(
-                  icon: Icon(Icons.admin_panel_settings),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/songCrud');
-                  },
+            SizedBox(
+              height: 240,
+              child: DrawerHeader(
+                decoration: BoxDecoration(
+                  color: TColor.primaryText.withOpacity(0.03),
                 ),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                controller: controller,
-                children: [
-                  HomeView(),
-                  Container(), // Placeholder para SearchScreen (no necesario si usas Navigator)
-                  Container(), // Placeholder para Library view
-                ],
+                child: Column(
+                  children: [
+                    Image.asset(
+                      "assets/img/app_logo.png",
+                      width: media.width * 0.17,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: const [
+                            Text(
+                              "328\nSongs",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Color(0xffC1C0C0), fontSize: 12),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: const [
+                            Text(
+                              "52\nAlbums",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Color(0xffC1C0C0), fontSize: 12),
+                            )
+                          ],
+                        ),
+                        Column(
+                          children: const [
+                            Text(
+                              "87\nArtists",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  color: Color(0xffC1C0C0), fontSize: 12),
+                            )
+                          ],
+                        )
+                      ],
+                    )
+                  ],
+                ),
               ),
+            ),
+            IconTextRow(
+              title: "Themes",
+              icon: "assets/img/m_theme.png",
+              onTap: () {},
+            ),
+            IconTextRow(
+              title: "Ringtone Cutter",
+              icon: "assets/img/m_ring_cut.png",
+              onTap: () {},
+            ),
+            IconTextRow(
+              title: "Sleep Timer",
+              icon: "assets/img/m_sleep_timer.png",
+              onTap: () {},
+            ),
+            IconTextRow(
+              title: "Equalizer",
+              icon: "assets/img/m_eq.png",
+              onTap: () {},
+            ),
+            IconTextRow(
+              title: "Driver Mode",
+              icon: "assets/img/img3.jpg",
+              onTap: () {},
+            ),
+            IconTextRow(
+              title: "Hidden Folders",
+              icon: "assets/img/img2.jpg",
+              onTap: () {},
+            ),
+            IconTextRow(
+              title: "Scan Media",
+              icon: "assets/img/img1.jpg",
+              onTap: () {},
+            ),
+            ListTile(
+              leading: Icon(Icons.login),
+              title: Text('Register'),
+              onTap: () {
+                Navigator.pop(context); // Cierra el drawer
+                Get.toNamed(AppRoutes.register); // Navega a la pantalla de registro
+              },
             ),
           ],
         ),
-        MiniPlayerView(),
-      ],
-    ),
-    bottomNavigationBar: BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: 'Search',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.library_music),
-          label: 'Library',
-        ),
-      ],
-      currentIndex: selectTab,
-      selectedItemColor: Color.fromARGB(255, 160, 5, 5),
-      unselectedItemColor: Colors.white,
-      backgroundColor: Color.fromARGB(255, 15, 15, 15),
-      onTap: (index) {
-        setState(() {
-          if (index == 1) {
-            Navigator.pushNamed(context, '/search'); // Navega a la pantalla de búsqueda
-          } else {
+      ),
+      body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Column(
+            children: [
+              AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                leading: IconButton(
+                  icon: Icon(Icons.menu), // Cambia el icono de búsqueda a menú
+                  onPressed: () {
+                    _scaffoldKey.currentState?.openDrawer();
+                  },
+                ),
+                title: Text('App Name'),
+              ),
+              Expanded(
+                child: TabBarView(
+                  controller: controller,
+                  children: [
+                    HomeView(),
+                    SearchScreen(), // Placeholder for Search view
+                    Container(), // Placeholder for Library view
+                  ],
+                ),
+              ),
+            ],
+          ),
+          MiniPlayerView(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.library_music),
+            label: 'Library',
+          ),
+        ],
+        currentIndex: selectTab,
+        selectedItemColor: Color.fromARGB(255, 160, 5, 5),
+        unselectedItemColor: Colors.white,
+        backgroundColor: Color.fromARGB(255, 15, 15, 15),
+        onTap: (index) {
+          setState(() {
             selectTab = index;
             controller?.animateTo(index);
-          }
-        });
-      },
-    ),
-  );
+          });
+        },
+      ),
+    );
+  }
 }
-    }

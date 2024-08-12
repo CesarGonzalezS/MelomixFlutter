@@ -36,7 +36,7 @@ class _SplashViewState extends State<SplashView> {
         // Muestra el logo de la aplicación en el centro de la pantalla.
         child: Image.asset(
           "assets/img/logomelomix.jpg",
-          width: media.width * 0.10, // Establece el ancho del logo como el 30% del ancho de la pantalla.
+          width: media.width * 10.10, // Establece el ancho del logo como el 30% del ancho de la pantalla.
         ),
       ),
     );
