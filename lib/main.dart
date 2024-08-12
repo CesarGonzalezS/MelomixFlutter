@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
     return BlocProvider(
       create: (context) => UserCubit(apiServices: ApiServices()), // Proveedor del cubit
       child: GetMaterialApp(
-        title: 'MelomiXXX',
+        title: 'MelomiMix',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: "Circular Std",
