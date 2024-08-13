@@ -7,5 +7,11 @@ static const String login='https://iubl4o2scl.execute-api.us-east-2.amazonaws.co
 
 static const String getReadAlmbuns='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_albums/1';
 
+//CRUD Songs
+static const String getAllSongsEndpoint ='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_song/'
+static const String getSongEndpoint='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_song/${songId}';
+static const String postSongEndpoint=' https://5zappruc5i.execute-api.us-east-2.amazonaws.com/Prod/create_song';
+static const String putSongEndpoint=' https://5zappruc5i.execute-api.us-east-2.amazonaws.com/Prod/update_song';
+static const String deleteSongEndpoint=' https://5zappruc5i.execute-api.us-east-2.amazonaws.com/Prod/delete_song/${songId}'; 
 
 }
