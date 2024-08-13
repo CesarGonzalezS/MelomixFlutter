@@ -22,4 +22,12 @@ class Config {
     static const String addUserEndpoint='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/add_user';
     static const String updateUserEndpoint='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/update_user';
     static const String deleteUserEndpoint='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/delete_user';
+
+    // Favorites
+    static const String getAllFavoritesByUserEndpoint="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/get_all_favorites_by_user";
+    static const String createFavoriteEndpoint="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/create_favorite";
+    static const String updateFavorite="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/update_favorite";
+    static const String deleteFavorite="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/delete_favorite/";
+
+
 }
