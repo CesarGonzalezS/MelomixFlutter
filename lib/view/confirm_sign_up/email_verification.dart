@@ -1,5 +1,8 @@
 // email_verification.dart
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:melomix/routes.dart';
 
 class EmailVerificationScreen extends StatefulWidget {
   final String email;
@@ -28,6 +31,8 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
+                // Navega a la pantalla de login
+                Get.offNamed(AppRoutes.login);
               },
             ),
           ],
