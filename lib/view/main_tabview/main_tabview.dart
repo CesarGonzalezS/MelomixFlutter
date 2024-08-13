@@ -245,6 +245,7 @@ class PlayerControls extends StatelessWidget {
                       ),
                     ),
                     Text(
+                      
                       _formatDuration(totalDuration),
                       style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
