@@ -1,6 +1,7 @@
+// login_screen.dart
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // Importa GetX para la navegación
-import 'package:melomix/routes.dart'; // Importa tus rutas
+import 'package:get/get.dart';
+import 'package:melomix/routes.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -12,6 +13,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Lista de usuarios administradores locales
+  final List<Map<String, String>> _localAdminUsers = [
+    {'email': 'admin', 'password': 'admin'},
+    {'email': 'admin456', 'password': 'admin'},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
-            Get.back(); // Usa GetX para volver a la pantalla anterior
+            Get.back();
           },
         ),
       ),
@@ -36,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(labelText: 'Email'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter an email';
+                      return 'Por favor ingrese un email';
                     }
                     return null;
                   },
@@ -47,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
+                      return 'Por favor ingrese una contraseña';
                     }
                     return null;
                   },
@@ -56,8 +63,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
-                      // Aquí puedes añadir la lógica para iniciar sesión
-                      Get.back(); // Vuelve a la pantalla anterior después de iniciar sesión
+                      String enteredEmail = _emailController.text.trim().toLowerCase();
+                      String enteredPassword = _passwordController.text.trim();
+
+                      print('Credenciales ingresadas: email=$enteredEmail, password=$enteredPassword');
+
+                      // Verificar si es un usuario administrador local
+                      bool isLocalAdmin = _localAdminUsers.any((admin) =>
+                      admin['email']!.toLowerCase() == enteredEmail && admin['password'] == enteredPassword
+                      );
+
+                      if (isLocalAdmin) {
+                        print('Usuario administrador local autenticado');
+                        Get.toNamed(AppRoutes.admin); // Navega a la pantalla de administrador
+                      } else {
+                        print('Credenciales incorrectas');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Inicio de sesión fallido, revise sus credenciales')),
+                        );
+                      }
                     }
                   },
                   child: Text('Iniciar Sesión'),
@@ -65,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    Get.toNamed(AppRoutes.main); // Navega a la pantalla principal sin iniciar sesión
+                    Get.toNamed(AppRoutes.main);
                   },
                   child: Text('Ir al Home'),
                 ),

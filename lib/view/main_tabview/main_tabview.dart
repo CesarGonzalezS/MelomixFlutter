@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:melomix/view/splash_login.dart';
-
-import 'package:get/get.dart'; // Asegúrate de importar GetX
-import 'package:melomix/common/color_extension.dart';
+import 'package:get/get.dart';
 import 'package:melomix/common_widget/icon_text_row.dart';
-import 'package:melomix/common_widget/mini_player_view.dart';
 import 'package:melomix/view/home/home_view.dart';
-import 'package:melomix/routes.dart'; // Importa tu archivo de rutas
+import 'package:melomix/routes.dart';
 
 class MainTabView extends StatefulWidget {
   const MainTabView({super.key});
@@ -16,7 +12,7 @@ class MainTabView extends StatefulWidget {
 }
 
 class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStateMixin {
-  bool _isMenuExpanded = false; // Controla si el menú está expandido
+  bool _isMenuExpanded = false;
   TabController? controller;
   int selectTab = 0;
 
@@ -45,8 +41,8 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            width: _isMenuExpanded ? 250.0 : 70.0, // Ancho del menú
-            color: const Color(0xff10121D), // Color de fondo del menú
+            width: _isMenuExpanded ? 250.0 : 70.0,
+            color: const Color(0xff10121D),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -61,13 +57,11 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                     });
                   },
                 ),
-           
                 IconTextRow(
                   title: "Driver Mode",
                   icon: "assets/img/img3.jpg",
                   onTap: () {},
                   isExpanded: _isMenuExpanded,
-                  
                 ),
                 IconTextRow(
                   title: "Hidden Folders",
@@ -84,10 +78,10 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                 ListTile(
                   leading: Icon(Icons.login, color: Colors.white),
                   title: _isMenuExpanded
-                      ? Text('Register', style: TextStyle(color: Colors.white))
+                      ? Text('Login', style: TextStyle(color: Colors.white))
                       : null,
                   onTap: () {
-                    Get.toNamed(AppRoutes.register); // Navega a la pantalla de registro
+                    Get.toNamed(AppRoutes.login);
                   },
                 ),
                 ListTile(
@@ -96,10 +90,7 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                       ? Text('Register', style: TextStyle(color: Colors.white))
                       : null,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SplashView()), // Navega a SplashView
-                    );
+                    Get.toNamed(AppRoutes.register);
                   },
                 ),
               ],
@@ -112,20 +103,18 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                 children: [
                   Column(
                     children: [
-          
                       Expanded(
                         child: TabBarView(
                           controller: controller,
                           children: [
                             HomeView(),
-                            Container(), // Placeholder for Search view
-                            Container(), // Placeholder for Library view
+                            Container(), // Vista de búsqueda
+                            Container(), // Vista de biblioteca
                           ],
                         ),
                       ),
                     ],
                   ),
-                  MiniPlayerView(),
                 ],
               ),
               bottomNavigationBar: BottomNavigationBar(
@@ -158,29 +147,6 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
           ),
         ],
       ),
-    );
-  }
-}
-
-class IconTextRow extends StatelessWidget {
-  final String title;
-  final String icon;
-  final bool isExpanded;
-  final VoidCallback onTap;
-
-  const IconTextRow({
-    required this.title,
-    required this.icon,
-    required this.onTap,
-    this.isExpanded = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Image.asset(icon, width: 24, color: Colors.white),
-      title: isExpanded ? Text(title, style: TextStyle(color: Colors.white)) : null,
-      onTap: onTap,
     );
   }
 }

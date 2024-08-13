@@ -6,8 +6,8 @@ import 'package:melomix/audio_helpers/page_manager.dart';
 import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/routes.dart';
-import 'package:melomix/presentation/cubits/user_cubit.dart'; // Importa tu cubit
-import 'package:melomix/services/api_services.dart'; // Importa tu servicio de API
+import 'package:melomix/presentation/cubits/user_cubit.dart';
+import 'package:melomix/services/api_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: AppRoutes.splash, // Usa la ruta inicial definida
         getPages: AppRoutes.routes, // Usa las rutas definidas
+
       ),
     );
   }

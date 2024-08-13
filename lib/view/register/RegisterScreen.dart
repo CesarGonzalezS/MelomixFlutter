@@ -1,13 +1,11 @@
-// register_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:melomix/presentation/cubits/user_cubit.dart';
+import 'package:melomix/presentation/cubits/user_state.dart';
 import 'package:melomix/services/api_services.dart';
 import 'package:melomix/data/model/user_model.dart';
-import 'package:melomix/routes.dart';
-import 'package:melomix/presentation/cubits/user_state.dart';
 import 'package:get/get.dart';
+import 'package:melomix/routes.dart';
 
 class RegisterScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -16,134 +14,151 @@ class RegisterScreen extends StatelessWidget {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  // Lista local para simular el almacenamiento de usuarios
-  final List<User_model> _localUsers = [];
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => UserCubit(apiServices: ApiServices()),
       child: Scaffold(
+        backgroundColor: Colors.black,
         appBar: AppBar(
-          title: Text('Registro'),
-          backgroundColor: Colors.blueAccent,
+          title: Text('Registro', style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.white),
         ),
         body: BlocListener<UserCubit, UserState>(
           listener: (context, state) {
             if (state is UserLoading) {
-              // Muestra un indicador de carga
               showDialog(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
+                builder: (context) => Center(
+                  child: CircularProgressIndicator(),
+                ),
               );
             } else if (state is UserSuccess) {
-              // Cerrar el diálogo de carga
-              Navigator.pop(context);
-              // Mostrar mensaje de éxito
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Registro exitoso')),
+              Navigator.pop(context); // Cierra el diálogo de carga
+              Get.snackbar(
+                'Éxito',
+                'Registro exitoso',
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.green,
+                colorText: Colors.white,
               );
-              // Agrega el usuario a la lista local
-              _localUsers.add(User_model(
-                username: _usernameController.text,
-                email: _emailController.text,
-                password: _passwordController.text,
-                dateJoined: DateTime.now().toIso8601String(),
-              ));
-              // Navega a la pantalla de verificación de correo
-              Get.toNamed(AppRoutes.emailVerification, arguments: {'email': _emailController.text});
+
+              // Mostrar un diálogo de verificación antes de navegar
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Verificación'),
+                  content: Text('Se ha enviado un correo de verificación.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Cerrar el diálogo
+                        Get.toNamed(AppRoutes.emailVerification,
+                            arguments: {'username': _usernameController.text});
+                      },
+                      child: Text('Aceptar'),
+                    ),
+                  ],
+                ),
+              );
             } else if (state is UserError) {
-              // Muestra el mensaje de error
-              Navigator.pop(context); // Cerrar el diálogo de carga
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
+              Navigator.pop(context); // Cierra el diálogo de carga
+              Get.snackbar(
+                'Error',
+                state.message,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.red,
+                colorText: Colors.white,
               );
             }
           },
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TextFormField(
-                      controller: _usernameController,
-                      decoration: InputDecoration(
-                        labelText: 'Username',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                    Text(
+                      'Crea una nueva cuenta',
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      validator: (value) => value!.isEmpty ? 'Required' : null,
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      validator: (value) => value!.isEmpty ? 'Please enter email' : null,
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: 'Password',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      obscureText: true,
-                      validator: (value) => value!.isEmpty ? 'Please enter password' : null,
-                    ),
-                    SizedBox(height: 10),
-                    TextFormField(
-                      controller: _confirmPasswordController,
-                      decoration: InputDecoration(
-                        labelText: 'Confirm Password',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      obscureText: true,
-                      validator: (value) => value != _passwordController.text ? 'Passwords do not match' : null,
                     ),
                     SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          final user = User_model(
-                            username: _usernameController.text,
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                            dateJoined: DateTime.now().toIso8601String(),
-                          );
-                          // Simula la creación de usuario
-                          context.read<UserCubit>().createUser(user);
+                    _buildTextField(
+                      controller: _usernameController,
+                      labelText: 'Nombre de Usuario',
+                      validator: (value) =>
+                      value!.isEmpty ? 'El nombre de usuario es requerido' : null,
+                    ),
+                    SizedBox(height: 15),
+                    _buildTextField(
+                      controller: _emailController,
+                      labelText: 'Correo Electrónico',
+                      validator: (value) =>
+                      value!.isEmpty ? 'Por favor ingrese un email' : null,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    SizedBox(height: 15),
+                    _buildPasswordField(
+                      controller: _passwordController,
+                      labelText: 'Contraseña',
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Por favor ingrese una contraseña';
                         }
+                        if (!RegExp(r'(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])')
+                            .hasMatch(value)) {
+                          return 'La contraseña debe contener al menos una letra mayúscula y un símbolo';
+                        }
+                        return null;
                       },
-                      child: Text('Register'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent, // En lugar de 'primary'
-                        foregroundColor: Colors.white, // En lugar de 'onPrimary'
-                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Sugerencias: Al menos 8 caracteres, una letra mayúscula y un símbolo',
+                      style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                    ),
+                    SizedBox(height: 15),
+                    _buildPasswordField(
+                      controller: _confirmPasswordController,
+                      labelText: 'Confirmar Contraseña',
+                      validator: (value) => value != _passwordController.text
+                          ? 'Las contraseñas no coinciden'
+                          : null,
+                    ),
+                    SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            final user = User_model(
+                              username: _usernameController.text,
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                              dateJoined: DateTime.now().toIso8601String(),
+                            );
+                            print('Attempting to create user');
+                            context.read<UserCubit>().createUser(user);
+                          }
+                        },
+                        child: Text('Registrarse', style: TextStyle(fontSize: 18)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueAccent,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -153,6 +168,75 @@ class RegisterScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    String? Function(String?)? validator,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextFormField(
+      controller: controller,
+      style: TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        labelText: labelText,
+        labelStyle: TextStyle(color: Colors.grey[400]),
+        filled: true,
+        fillColor: Colors.grey[850],
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blueAccent, width: 2.0),
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      validator: validator,
+      keyboardType: keyboardType,
+    );
+  }
+
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String labelText,
+    String? Function(String?)? validator,
+  }) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        bool obscureText = true;
+        return TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          style: TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            labelText: labelText,
+            labelStyle: TextStyle(color: Colors.grey[400]),
+            filled: true,
+            fillColor: Colors.grey[850],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blueAccent, width: 2.0),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscureText ? Icons.visibility : Icons.visibility_off,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  obscureText = !obscureText;
+                });
+              },
+            ),
+          ),
+          validator: validator,
+        );
+      },
     );
   }
 }
