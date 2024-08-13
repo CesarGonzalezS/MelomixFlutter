@@ -1,6 +1,8 @@
+// home_view.dart
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:melomix/view/splash_login.dart'; // Asegúrate de importar la pantalla de registro
+import 'package:get/get.dart';
+import 'package:melomix/routes.dart';
 
 class HomeView extends StatelessWidget {
   final List<String> albumImages = [
@@ -42,15 +44,12 @@ class HomeView extends StatelessWidget {
                 ],
               ),
             ),
-            pinned: true, // Si deseas que el AppBar se quede fijo en la parte superior al hacer scroll
+            pinned: true,
             actions: [
               IconButton(
                 icon: Icon(Icons.person_add),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SplashView()),
-                  );
+                  Get.toNamed(AppRoutes.login); // Navega a la pantalla de login
                 },
               ),
             ],
@@ -118,7 +117,7 @@ class HomeView extends StatelessWidget {
                 mainAxisSpacing: 48.0,
               ),
               delegate: SliverChildBuilderDelegate(
-                (context, index) {
+                    (context, index) {
                   return Column(
                     children: [
                       Expanded(
