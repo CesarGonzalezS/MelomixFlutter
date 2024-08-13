@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
-import 'package:melomix/data/model/song_model.dart';
+import 'package:melomix/data/model/songs_model.dart';
+
 import 'package:melomix/services/api_services.dart';
 import 'package:melomix/presentation/cubits/song_state.dart';
 
@@ -8,11 +9,11 @@ class SongCubit extends Cubit<SongState> {
 
   SongCubit({required this.apiServices}) : super(SongInitial());
 
-  Future<void> createSong(Song_model song) async {
+  Future<void> createSong(Song song) async {
     try {
       emit(SongLoading());
       await apiServices.createSong(song);
-      final songs = await apiServices.getSongs(); // Asumiendo que tienes un método para obtener todas las canciones
+      final songs = await apiServices.getAllSongs(); // Asumiendo que tienes un método para obtener todas las canciones
       emit(SongSuccess(songs: songs));
     } catch (e) {
       emit(SongError(message: e.toString()));
@@ -22,18 +23,18 @@ class SongCubit extends Cubit<SongState> {
   Future<void> readSongs() async {
     try {
       emit(SongLoading());
-      final songs = await apiServices.getSongs(); // Asumiendo que tienes un método para obtener todas las canciones
+      final songs = await apiServices.getAllSongs(); // Asumiendo que tienes un método para obtener todas las canciones
       emit(SongSuccess(songs: songs));
     } catch (e) {
       emit(SongError(message: e.toString()));
     }
   }
 
-  Future<void> updateSong(Song_model song) async {
+  Future<void> updateSong(Song song) async {
     try {
       emit(SongLoading());
       await apiServices.updateSong(song);
-      final songs = await apiServices.getSongs(); // Asumiendo que tienes un método para obtener todas las canciones
+      final songs = await apiServices.getAllSongs(); // Asumiendo que tienes un método para obtener todas las canciones
       emit(SongSuccess(songs: songs));
     } catch (e) {
       emit(SongError(message: e.toString()));
@@ -44,7 +45,7 @@ class SongCubit extends Cubit<SongState> {
     try {
       emit(SongLoading());
       await apiServices.deleteSong(songId);
-      final songs = await apiServices.getSongs(); // Asumiendo que tienes un método para obtener todas las canciones
+      final songs = await apiServices.getAllSongs(); // Asumiendo que tienes un método para obtener todas las canciones
       emit(SongSuccess(songs: songs));
     } catch (e) {
       emit(SongError(message: e.toString()));

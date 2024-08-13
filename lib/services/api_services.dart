@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:melomix/data/model/user_model.dart';
-import 'package:melomix/data/model/song_model.dart';
+import 'package:melomix/data/model/songs_model.dart';
 import 'package:melomix/config/config.dart';
 //Importations of albums
 import '../data/model/albums.dart';

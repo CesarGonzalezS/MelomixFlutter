@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:melomix/data/model/song_model.dart';
+import 'package:melomix/data/model/songs_model.dart';
 
 class SongRepository {
   final String apiUrl;
