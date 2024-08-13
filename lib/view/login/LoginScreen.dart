@@ -1,6 +1,8 @@
+// login_screen.dart
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // Importa GetX para la navegación
-import 'package:melomix/routes.dart'; // Importa tus rutas
+import 'package:get/get.dart';
+import 'package:melomix/services/api_services.dart';
+import 'package:melomix/routes.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final ApiServices _apiServices = ApiServices();
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
-            Get.back(); // Usa GetX para volver a la pantalla anterior
+            Get.back();
           },
         ),
       ),
@@ -36,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: InputDecoration(labelText: 'Email'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter an email';
+                      return 'Por favor ingrese un email';
                     }
                     return null;
                   },
@@ -47,17 +50,31 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
+                      return 'Por favor ingrese una contraseña';
                     }
                     return null;
                   },
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      // Aquí puedes añadir la lógica para iniciar sesión
-                      Get.back(); // Vuelve a la pantalla anterior después de iniciar sesión
+                      try {
+                        bool success = await _apiServices.loginUser(
+                          _emailController.text,
+                          _passwordController.text,
+                        );
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Inicio de sesión exitoso')),
+                          );
+                          Get.toNamed(AppRoutes.main); // Navega a la pantalla principal
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error al iniciar sesión: $e')),
+                        );
+                      }
                     }
                   },
                   child: Text('Iniciar Sesión'),
@@ -65,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    Get.toNamed(AppRoutes.main); // Navega a la pantalla principal sin iniciar sesión
+                    Get.toNamed(AppRoutes.main);
                   },
                   child: Text('Ir al Home'),
                 ),

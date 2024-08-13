@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:melomix/data/model/user_model.dart';
 import 'package:melomix/services/api_services.dart';
-import 'user_state.dart';
+import 'package:melomix/presentation/cubits/user_state.dart';
 
 class UserCubit extends Cubit<UserState> {
   final ApiServices apiServices;

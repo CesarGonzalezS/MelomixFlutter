@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: AppRoutes.splash, // Usa la ruta inicial definida
         getPages: AppRoutes.routes, // Usa las rutas definidas
+
       ),
     );
   }

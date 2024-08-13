@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:melomix/view/splash_login.dart';
-
-import 'package:get/get.dart'; // Asegúrate de importar GetX
-import 'package:melomix/common/color_extension.dart';
+import 'package:get/get.dart';
 import 'package:melomix/common_widget/icon_text_row.dart';
 import 'package:melomix/common_widget/mini_player_view.dart';
 import 'package:melomix/view/home/home_view.dart';
-import 'package:melomix/routes.dart'; // Importa tu archivo de rutas
+import 'package:melomix/routes.dart';
 
 class MainTabView extends StatefulWidget {
   const MainTabView({super.key});
@@ -61,13 +58,11 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                     });
                   },
                 ),
-           
                 IconTextRow(
                   title: "Driver Mode",
                   icon: "assets/img/img3.jpg",
                   onTap: () {},
                   isExpanded: _isMenuExpanded,
-                  
                 ),
                 IconTextRow(
                   title: "Hidden Folders",
@@ -84,7 +79,7 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                 ListTile(
                   leading: Icon(Icons.login, color: Colors.white),
                   title: _isMenuExpanded
-                      ? Text('Register', style: TextStyle(color: Colors.white))
+                      ? Text('Login', style: TextStyle(color: Colors.white))
                       : null,
                   onTap: () {
                     Get.toNamed(AppRoutes.register); // Navega a la pantalla de registro
@@ -96,10 +91,7 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                       ? Text('Register', style: TextStyle(color: Colors.white))
                       : null,
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SplashView()), // Navega a SplashView
-                    );
+                    Get.toNamed(AppRoutes.register); // Usa GetX para la navegación
                   },
                 ),
               ],
@@ -112,7 +104,6 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                 children: [
                   Column(
                     children: [
-          
                       Expanded(
                         child: TabBarView(
                           controller: controller,

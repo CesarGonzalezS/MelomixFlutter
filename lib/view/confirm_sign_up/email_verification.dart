@@ -1,25 +1,14 @@
 // email_verification.dart
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:melomix/routes.dart';
 
-class EmailVerificationScreen extends StatefulWidget {
-  final String email;
-
-  EmailVerificationScreen({required this.email});
-
-  @override
-  _EmailVerificationScreenState createState() => _EmailVerificationScreenState();
-}
-
-class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
+class EmailVerificationScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   String _verificationCode = '';
   bool _isLoading = false;
   String _errorMessage = '';
 
-  void _showAlert(String title, String message) {
+  void _showAlert(BuildContext context, String title, String message) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -31,8 +20,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
-                // Navega a la pantalla de login
-                Get.offNamed(AppRoutes.login);
+                Get.offNamed('/login');
               },
             ),
           ],
@@ -41,30 +29,28 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     );
   }
 
-  void _verifyCode() async {
+  void _verifyCode(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = '';
-      });
+      _isLoading = true;
+      _errorMessage = '';
 
       await Future.delayed(Duration(seconds: 2)); // Simula la verificación
 
-      setState(() {
-        _isLoading = false;
-      });
+      _isLoading = false;
 
-      _showAlert('Éxito', 'Su correo electrónico ha sido verificado exitosamente.');
+      _showAlert(context, 'Éxito', 'Su usuario ha sido verificado exitosamente.');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final String username = Get.arguments['username'] ?? 'Usuario';
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text('Verificación de correo'),
+        title: Text('Verificación de usuario'),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -73,7 +59,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Verifique su correo electrónico',
+                'Verifique su usuario',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -82,7 +68,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
               ),
               SizedBox(height: 10),
               Text(
-                'Hemos enviado un código de verificación a ${widget.email}. Por favor, ingréselo a continuación.',
+                'Hemos enviado un código de verificación a $username. Por favor, ingréselo a continuación.',
                 style: TextStyle(color: Colors.white, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
@@ -125,9 +111,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           return null;
                         },
                         onChanged: (value) {
-                          setState(() {
-                            _verificationCode = value;
-                          });
+                          _verificationCode = value;
                         },
                       ),
                       SizedBox(height: 20),
@@ -137,7 +121,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                           textStyle: TextStyle(fontSize: 18),
                         ),
-                        onPressed: _verifyCode,
+                        onPressed: () => _verifyCode(context),
                         child: _isLoading
                             ? CircularProgressIndicator()
                             : Text('Verificar'),

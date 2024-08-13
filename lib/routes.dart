@@ -8,16 +8,14 @@ import 'package:melomix/view/forgot_password/PasswordRecoveryScreen.dart';
 import 'package:melomix/view/confirm_sign_up/email_verification.dart';
 import 'package:melomix/view/login/LoginScreen.dart';
 
-
-
-// Define tus rutas
 class AppRoutes {
   static const String splash = '/';
   static const String main = '/main';
   static const String register = '/register';
   static const String passwordRecovery = '/passwordRecovery';
-  static const String emailVerification = '/emailVerification'; // Cambié a minúscula para consistencia
-  static const String login ='/Login';
+  static const String emailVerification = '/emailVerification';
+  static const String login = '/login';
+
   static final List<GetPage> routes = [
     GetPage(
       name: splash,
@@ -36,15 +34,12 @@ class AppRoutes {
       page: () => PasswordRecoveryScreen(),
     ),
     GetPage(
-      name: emailVerification, // Usa el nombre consistente aquí
-      page: () => EmailVerificationScreen(
-        email: Get.parameters['email'] ?? '', // Recupera el argumento de email desde GetX
-      ),
+      name: emailVerification,
+      page: () => EmailVerificationScreen(),
     ),
-     GetPage(
+    GetPage(
       name: login,
       page: () => LoginScreen(),
     ),
-
   ];
 }
