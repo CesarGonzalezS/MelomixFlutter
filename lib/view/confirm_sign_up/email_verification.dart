@@ -44,7 +44,7 @@ class EmailVerificationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String username = Get.arguments['username'] ?? 'Usuario';
+    final String username = Get.arguments?['username'] ?? 'Usuario';
 
     return Scaffold(
       backgroundColor: Colors.black,

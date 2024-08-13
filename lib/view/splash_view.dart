@@ -16,7 +16,7 @@ class _SplashViewState extends State<SplashView> {
     super.initState();
     // Simular carga y luego navegar al login
     Future.delayed(Duration(seconds: 2), () {
-      Get.offNamed(AppRoutes.login); // Navegar al login
+      Get.offNamed(AppRoutes.home); // Navegar al login
     });
   }
 

@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:melomix/view/splash_view.dart';
-import 'package:melomix/view/main_tabview/main_tabview.dart';
 import 'package:melomix/view/register/RegisterScreen.dart';
 import 'package:melomix/view/forgot_password/PasswordRecoveryScreen.dart';
 import 'package:melomix/view/confirm_sign_up/email_verification.dart';
@@ -13,9 +12,11 @@ import 'package:melomix/view/admin/artist_screen.dart';
 import 'package:melomix/view/admin/songs_screen.dart';
 import 'package:melomix/view/admin/admin_screen.dart';
 import 'package:melomix/view/admin/favorites_screen.dart';
+import 'package:melomix/view/home/home_view.dart';
 
 class AppRoutes {
   static const String splash = '/';
+  static const String home = '/home';
   static const String main = '/main';
   static const String register = '/register';
   static const String passwordRecovery = '/passwordRecovery';
@@ -34,9 +35,10 @@ class AppRoutes {
       page: () => SplashView(),
     ),
     GetPage(
-      name: main,
-      page: () => MainTabView(),
+      name: home,
+      page: () => HomeView(),
     ),
+
     GetPage(
       name: register,
       page: () => RegisterScreen(),

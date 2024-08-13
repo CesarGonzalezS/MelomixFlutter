@@ -1,3 +1,4 @@
+// register_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:melomix/presentation/cubits/user_cubit.dart';
@@ -46,24 +47,8 @@ class RegisterScreen extends StatelessWidget {
                 colorText: Colors.white,
               );
 
-              // Mostrar un diálogo de verificación antes de navegar
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text('Verificación'),
-                  content: Text('Se ha enviado un correo de verificación.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context); // Cerrar el diálogo
-                        Get.toNamed(AppRoutes.emailVerification,
-                            arguments: {'username': _usernameController.text});
-                      },
-                      child: Text('Aceptar'),
-                    ),
-                  ],
-                ),
-              );
+              // Navegar directamente a la pantalla de verificación de correo electrónico
+              Get.toNamed(AppRoutes.emailVerification, arguments: {'username': _usernameController.text});
             } else if (state is UserError) {
               Navigator.pop(context); // Cierra el diálogo de carga
               Get.snackbar(
