@@ -71,16 +71,18 @@ class _MainTabViewState extends State<MainTabView> with SingleTickerProviderStat
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        _isMenuExpanded ? Icons.arrow_back : Icons.menu,
-                        color: Colors.white,
+                    Center(
+                      child: IconButton(
+                        icon: Icon(
+                          _isMenuExpanded ? Icons.arrow_back : Icons.menu,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isMenuExpanded = !_isMenuExpanded;
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _isMenuExpanded = !_isMenuExpanded;
-                        });
-                      },
                     ),
                     IconTextRow(
                       title: "Driver Mode",
