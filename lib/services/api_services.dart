@@ -41,6 +41,31 @@ class ApiServices {
       throw Exception('Failed to load users');
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   //------------------------------------------------------
   //Services de albums
   //------------------------------------------------------
@@ -50,7 +75,7 @@ class ApiServices {
       Uri.parse(Config.createAlbumEndpoint),
       headers:<String , String>{
         'Content-Type': 'application/json; charset= UTF-8',
-    },
+      },
       body: jsonEncode(album.toMap()),
     );
     if (response.statusCode == 200) {
@@ -102,7 +127,7 @@ class ApiServices {
       throw Exception('Album failed to delete in line 102');
     }
   }
-  //-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 
 }
