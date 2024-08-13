@@ -42,7 +42,7 @@ class HomeView extends StatelessWidget {
                 ],
               ),
             ),
-            pinned: true, // Si deseas que el AppBar se quede fijo en la parte superior al hacer scroll
+            pinned: true,
             actions: [
               IconButton(
                 icon: Icon(Icons.person_add),

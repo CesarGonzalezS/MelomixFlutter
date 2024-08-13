@@ -1,7 +1,6 @@
 // login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:melomix/services/api_services.dart';
 import 'package:melomix/routes.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,7 +12,12 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final ApiServices _apiServices = ApiServices();
+
+  // Lista de usuarios administradores locales
+  final List<Map<String, String>> _localAdminUsers = [
+    {'email': 'admin', 'password': 'admin'},
+    {'email': 'admin456', 'password': 'admin'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -57,22 +61,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () async {
+                  onPressed: () {
                     if (_formKey.currentState?.validate() ?? false) {
-                      try {
-                        bool success = await _apiServices.loginUser(
-                          _emailController.text,
-                          _passwordController.text,
-                        );
-                        if (success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Inicio de sesión exitoso')),
-                          );
-                          Get.toNamed(AppRoutes.main); // Navega a la pantalla principal
-                        }
-                      } catch (e) {
+                      String enteredEmail = _emailController.text.trim().toLowerCase();
+                      String enteredPassword = _passwordController.text.trim();
+
+                      print('Credenciales ingresadas: email=$enteredEmail, password=$enteredPassword');
+
+                      // Verificar si es un usuario administrador local
+                      bool isLocalAdmin = _localAdminUsers.any((admin) =>
+                      admin['email']!.toLowerCase() == enteredEmail && admin['password'] == enteredPassword
+                      );
+
+                      if (isLocalAdmin) {
+                        print('Usuario administrador local autenticado');
+                        Get.toNamed(AppRoutes.admin); // Navega a la pantalla de administrador
+                      } else {
+                        print('Credenciales incorrectas');
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error al iniciar sesión: $e')),
+                          SnackBar(content: Text('Inicio de sesión fallido, revise sus credenciales')),
                         );
                       }
                     }

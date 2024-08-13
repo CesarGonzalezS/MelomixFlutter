@@ -42,7 +42,8 @@ class ApiServices {
   }
 
   Future<bool> loginUser(String email, String password) async {
-    print('API loginUser called');
+    print('API loginUser called with email=$email');
+
     final response = await http.post(
       Uri.parse(Config.login),
       headers: <String, String>{
@@ -55,13 +56,20 @@ class ApiServices {
     );
 
     print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
 
     if (response.statusCode == 200) {
-      print('Login successful');
-      return true; // Retorna true si el inicio de sesión fue exitoso
+      final responseData = jsonDecode(response.body);
+      if (responseData['success'] == true) {
+        print('Login successful');
+        return true;
+      } else {
+        print('Login failed: ${responseData['message']}');
+        return false;
+      }
     } else {
-      print('Login failed: ${response.body}');
-      throw Exception('Failed to login');
+      print('Login failed with status: ${response.statusCode}');
+      return false;
     }
   }
 }
