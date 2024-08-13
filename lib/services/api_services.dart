@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:melomix/data/model/user_model.dart';
-import 'package:melomix/data/model/songs_model.dart';
+import 'package:melomix/data/model/song_model.dart';
 import 'package:melomix/config/config.dart';
 //Importations of albums
 import '../data/model/albums.dart';
@@ -78,44 +78,51 @@ class ApiServices {
 
   // Servicios para las canciones
   Future<void> createSong(Song song) async {
-    print('API createSong called');
     final response = await http.post(
       Uri.parse(Config.postSongEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(song.toJson()..remove('songId')),
+      body: jsonEncode(song.toMap()),
     );
 
-    print('Response status: ${response.statusCode}');
     if (response.statusCode != 200) {
-      print('Error: ${response.body}');
       throw Exception('Failed to create song');
-    } else {
-      print('Song created successfully');
     }
   }
 
-  Future<Song> readSong(int songId) async {
-    print('API readSong called with songId=$songId');
+  Future<List<Song>> getAllSongs() async {
     final response = await http.get(
-      Uri.parse(Config.getSongEndpoint.replaceAll('${songId}', songId.toString())),
+      Uri.parse(Config.getAllSongsEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
 
-    print('Response status: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      return jsonResponse.map((song) => Song.fromJson(song)).toList();
+    } else {
+      throw Exception('Failed to load songs');
+    }
+  }
+
+  Future<Song> getSong(int songId) async {
+    final response = await http.get(
+      Uri.parse('${Config.getSongEndpoint.replaceAll('1', songId.toString())}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
     if (response.statusCode == 200) {
       return Song.fromJson(jsonDecode(response.body));
     } else {
-      print('Error: ${response.body}');
       throw Exception('Failed to load song');
     }
   }
 
   Future<void> updateSong(Song song) async {
-    print('API updateSong called');
     final response = await http.put(
       Uri.parse(Config.putSongEndpoint),
       headers: <String, String>{
@@ -124,52 +131,25 @@ class ApiServices {
       body: jsonEncode(song.toJson()),
     );
 
-    print('Response status: ${response.statusCode}');
     if (response.statusCode != 200) {
-      print('Error: ${response.body}');
       throw Exception('Failed to update song');
-    } else {
-      print('Song updated successfully');
     }
   }
 
   Future<void> deleteSong(int songId) async {
-    print('API deleteSong called with songId=$songId');
     final response = await http.delete(
-      Uri.parse(Config.deleteSongEndpoint.replaceAll('${songId}', songId.toString())),
+      Uri.parse('${Config.deleteSongEndpoint.replaceAll('1', songId.toString())}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
 
-    print('Response status: ${response.statusCode}');
     if (response.statusCode != 200) {
-      print('Error: ${response.body}');
       throw Exception('Failed to delete song');
-    } else {
-      print('Song deleted successfully');
     }
   }
-
-  Future<List<Song>> getAllSongs() async {
-    print('API getAllSongs called');
-    final response = await http.get(
-      Uri.parse(Config.getAllSongsEndpoint),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
-
-    print('Response status: ${response.statusCode}');
-    if (response.statusCode == 200) {
-      List<dynamic> jsonResponse = jsonDecode(response.body);
-      return jsonResponse.map((song) => Song.fromJson(song)).toList();
-    } else {
-      print('Error: ${response.body}');
-      throw Exception('Failed to load songs');
-    }
-  }
-
+}
+  
   // Servicios para los álbumes
   Future<void> createAlbum(Album album) async {
     final response = await http.post(
@@ -225,4 +205,4 @@ class ApiServices {
       throw Exception('Album failed to delete');
     }
   }
-}
+

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../data/model/songs_model.dart'; 
+import '../../data/model/song_model.dart'; 
 
 abstract class SongState extends Equatable {
   @override
