@@ -1,5 +1,7 @@
+// password_recovery_screen.dart
 import 'package:flutter/material.dart';
-import 'package:melomix/view/splash_login.dart'; // Ruta al login
+import 'package:get/get.dart'; // Importa GetX para la navegación
+import 'package:melomix/routes.dart'; // Importa tus rutas
 import 'package:melomix/common_widget/animated_logo.dart'; // Ruta al widget del logo animado
 
 class PasswordRecoveryScreen extends StatefulWidget {
@@ -53,10 +55,7 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
       _showAlert('Éxito', 'Se ha enviado un correo electrónico para recuperar su contraseña.');
 
       // Regresar a la pantalla de inicio de sesión
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SplashView()),
-      );
+      Get.offNamed(AppRoutes.login); // Navega a la pantalla de login usando GetX
     }
   }
 
@@ -70,7 +69,7 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              // Logo de bienvenida con animación (puedes cambiar esto si lo prefieres)
+              // Logo de bienvenida con animación
               AnimatedLogo(),
               SizedBox(height: 10),
               // Texto de bienvenida
@@ -85,7 +84,7 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
               SizedBox(height: 5),
               // Contenedor para el formulario de recuperación de contraseña
               Container(
-                constraints: BoxConstraints(maxWidth: 600, minHeight: 300), // Controla el ancho máximo del contenedor
+                constraints: BoxConstraints(maxWidth: 600, minHeight: 300),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(15),
@@ -131,6 +130,12 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
                       ),
                       SizedBox(height: 20),
                       // Botón de recuperación de contraseña
+                      ElevatedButton(
+                        onPressed: _isLoading ? null : _recoverPassword,
+                        child: _isLoading
+                            ? CircularProgressIndicator()
+                            : Text('Recuperar Contraseña'),
+                      ),
                       SizedBox(height: 10),
                       // Mensaje de error
                       if (_errorMessage.isNotEmpty)
@@ -139,7 +144,7 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
                           textAlign: TextAlign.center,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          softWrap: true, // Ajustar el texto en caso de que sea demasiado largo para la pantalla
+                          softWrap: true,
                           style: TextStyle(color: Colors.red, fontSize: 16),
                         ),
                       SizedBox(height: 10),
@@ -153,10 +158,7 @@ class _PasswordRecoveryScreenState extends State<PasswordRecoveryScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => SplashView()),
-                          );
+                          Get.offNamed(AppRoutes.login); // Navega a la pantalla de login
                         },
                         child: Text(
                           'Iniciar sesión',

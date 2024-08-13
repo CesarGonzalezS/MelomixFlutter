@@ -16,7 +16,7 @@ class User_model {
   // Convertir de JSON a una instancia de User_model
   factory User_model.fromJson(Map<String, dynamic> json) {
     return User_model(
-      userId: json['userId'] ?? '', // Manejar caso en que userId no esté presente
+      userId: json['userId'] ?? '',
       username: json['username'] ?? '',
       email: json['email'] ?? '',
       password: json['password'] ?? '',

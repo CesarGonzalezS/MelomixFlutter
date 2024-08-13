@@ -93,6 +93,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: Text('Ir al Home'),
                 ),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Get.toNamed(AppRoutes.register); // Navega a la pantalla de registro
+                  },
+                  child: Text('¿No tienes una cuenta? Regístrate'),
+                ),
               ],
             ),
           ),
