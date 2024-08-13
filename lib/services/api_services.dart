@@ -1,9 +1,10 @@
-// api_services.dart
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:melomix/data/model/user_model.dart';
 import 'package:melomix/data/model/song_model.dart';
 import 'package:melomix/config/config.dart';
+//Importations of albums
+import '../data/model/albums.dart';
 
 class ApiServices {
   Future<void> createUser(User_model user) async {
@@ -42,6 +43,7 @@ class ApiServices {
     }
   }
 
+  // Servicio de login
   Future<bool> loginUser(String email, String password) async {
     print('API loginUser called with email=$email');
 
@@ -74,6 +76,7 @@ class ApiServices {
     }
   }
 
+  // Servicios para las canciones
   Future<void> createSong(Song song) async {
     print('API createSong called');
     final response = await http.post(
@@ -93,7 +96,6 @@ class ApiServices {
     }
   }
 
-  // Leer una canción por ID
   Future<Song> readSong(int songId) async {
     print('API readSong called with songId=$songId');
     final response = await http.get(
@@ -112,7 +114,6 @@ class ApiServices {
     }
   }
 
-  // Actualizar una canción existente
   Future<void> updateSong(Song song) async {
     print('API updateSong called');
     final response = await http.put(
@@ -132,7 +133,6 @@ class ApiServices {
     }
   }
 
-  // Eliminar una canción por ID
   Future<void> deleteSong(int songId) async {
     print('API deleteSong called with songId=$songId');
     final response = await http.delete(
@@ -151,7 +151,6 @@ class ApiServices {
     }
   }
 
-  // Obtener todas las canciones (opcional)
   Future<List<Song>> getAllSongs() async {
     print('API getAllSongs called');
     final response = await http.get(
@@ -168,6 +167,62 @@ class ApiServices {
     } else {
       print('Error: ${response.body}');
       throw Exception('Failed to load songs');
+    }
+  }
 
+  // Servicios para los álbumes
+  Future<void> createAlbum(Album album) async {
+    final response = await http.post(
+      Uri.parse(Config.createAlbumEndpoint),
+      headers:<String , String>{
+        'Content-Type': 'application/json; charset= UTF-8',
+      },
+      body: jsonEncode(album.toMap()),
+    );
+    if (response.statusCode == 200) {
+      print('Album created successfully');
+    } else {
+      throw Exception('Failed to create album');
+    }
+  }
+
+  Future<List<Album>> getAllAlbums() async{
+    final response = await http.get(
+      Uri.parse(Config.getAllAlbumsEndpoint),
+      headers:<String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+    if(response.statusCode == 200){
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      return jsonResponse.map((album) => Album.fromJson(album)).toList();
+    }else{
+      throw Exception('Failed to get all albums');
+    }
+  }
+
+  Future<void> updateAlbum(Album album) async {
+    final response = await http.put(
+      Uri.parse(Config.updateAlbumEndpoint +'/${album.albumId}'),
+      headers:<String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(album.toMap()),
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Album failed to update');
+    }
+  }
+
+  Future<void> deleteAlbum(int albumId) async {
+    final response = await http.delete(
+      Uri.parse(Config.deleteAlbumEndpoint + '/$albumId'),
+      headers:<String, String>{
+        'Content-Type': 'application/json; charset= UTS-8',
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Album failed to delete');
+    }
+  }
 }
-
