@@ -39,7 +39,33 @@ class FavoriteRepository {
   }
 
   //Update a favorite
+  Future<void> updateFavorite(Favorite favorite) async{
+    final response = await http.put(
+      Uri.parse('${Config.updateFavorite}/${favorite.favoriteId}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; carset=UTF-8',
+      },
+      body: jsonEncode(favorite.toMap())
+    );
 
+    if(response.statusCode != 200){
+      throw Exception("Failed to update favorite lin52");
+    }
+  }
+
+  //Eliminate a favorite
+  Future<void> deleteFavorite(int favoriteId) async{
+    final response = await http.delete(
+      Uri.parse("${Config.deleteFavorite}/$favoriteId"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if(response.statusCode != 200){
+      throw Exception("Failed to delete favorite line 66");
+    }
+  }
 
 }
 
