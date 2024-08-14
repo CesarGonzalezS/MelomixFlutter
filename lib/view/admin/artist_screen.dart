@@ -10,15 +10,20 @@ class ArtistScreen extends StatefulWidget {
 }
 
 class _ArtistScreenState extends State<ArtistScreen> {
+  // Definir un GlobalKey para el ScaffoldMessenger
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   @override
   void initState() {
     super.initState();
+    // Cargar los artistas al iniciar la pantalla
     context.read<ArtistCubit>().loadArtists();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldMessengerKey,  // Asociar el GlobalKey con el Scaffold
       appBar: AppBar(
         title: Text('Artists'),
         centerTitle: true,
@@ -49,7 +54,6 @@ class _ArtistScreenState extends State<ArtistScreen> {
                   columns: const [
                     DataColumn(label: Text('Artist')),
                     DataColumn(label: Text('Genre')),
-                    DataColumn(label: Text('Actions')),
                   ],
                   rows: state.artists.map((artist) {
                     return DataRow(
@@ -61,22 +65,6 @@ class _ArtistScreenState extends State<ArtistScreen> {
                         DataCell(Text(
                           artist.genre,
                           style: TextStyle(color: Colors.grey),
-                        )),
-                        DataCell(Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit, color: Colors.blue),
-                              onPressed: () {
-                                _showEditArtistModal(context, artist);
-                              },
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () {
-                                _showDeleteConfirmationDialog(context, artist);
-                              },
-                            ),
-                          ],
                         )),
                       ],
                     );
@@ -233,207 +221,35 @@ class _ArtistScreenState extends State<ArtistScreen> {
     );
   }
 
-  void _showEditArtistModal(BuildContext context, Artist artist) {
-    TextEditingController nameController = TextEditingController(text: artist.name);
-    TextEditingController genreController = TextEditingController(text: artist.genre);
-    TextEditingController bioController = TextEditingController(text: artist.bio ?? '');
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.grey[850],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            bool isFormValid = nameController.text.isNotEmpty &&
-                genreController.text.isNotEmpty;
-
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-                top: 16,
-                left: 16,
-                right: 16,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextField(
-                    controller: nameController,
-                    decoration: InputDecoration(
-                      labelText: 'Name',
-                      labelStyle: TextStyle(color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white70),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                    ),
-                    style: TextStyle(color: Colors.white),
-                    onChanged: (_) {
-                      setState(() {
-                        isFormValid = nameController.text.isNotEmpty &&
-                            genreController.text.isNotEmpty;
-                      });
-                    },
-                  ),
-                  TextField(
-                    controller: genreController,
-                    decoration: InputDecoration(
-                      labelText: 'Genre',
-                      labelStyle: TextStyle(color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white70),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                    ),
-                    style: TextStyle(color: Colors.white),
-                    onChanged: (_) {
-                      setState(() {
-                        isFormValid = nameController.text.isNotEmpty &&
-                            genreController.text.isNotEmpty;
-                      });
-                    },
-                  ),
-                  TextField(
-                    controller: bioController,
-                    decoration: InputDecoration(
-                      labelText: 'Bio (optional)',
-                      labelStyle: TextStyle(color: Colors.white),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white70),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.green),
-                      ),
-                    ),
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ),
-                      SizedBox(width: 8),
-                      TextButton(
-                        onPressed: isFormValid
-                            ? () async {
-                                Navigator.of(context).pop();
-                                await _editArtist(
-                                  context,
-                                  artist.copyWith(
-                                    name: nameController.text,
-                                    genre: genreController.text,
-                                    bio: bioController.text,
-                                  ),
-                                );
-                              }
-                            : null,
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
-                            isFormValid ? Colors.green : Colors.green[900],
-                          ),
-                          foregroundColor: MaterialStateProperty.all(
-                            Colors.white,
-                          ),
-                        ),
-                        child: Text('Update'),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+  Future<void> _addArtist(BuildContext context, String name, String genre, String bio) async {
+    final newArtist = Artist(
+      artistId: 0, // Este campo puede ser ignorado si lo maneja el backend
+      name: name,
+      genre: genre,
+      bio: bio,
     );
-  }
 
-  Future<void> _addArtist(
-    BuildContext context,
-    String name,
-    String genre,
-    String bio,
-  ) async {
-    final cubit = context.read<ArtistCubit>();
     try {
-      await cubit.addArtist(name, genre, bio);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Artist added successfully')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add artist: $e')),
-      );
-    }
-  }
+      await context.read<ArtistCubit>().createArtist(newArtist);
 
-  Future<void> _editArtist(
-    BuildContext context,
-    Artist artist,
-  ) async {
-    final cubit = context.read<ArtistCubit>();
-    try {
-      await cubit.updateArtist(artist);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Artist updated successfully')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update artist: $e')),
-      );
-    }
-  }
-
-  Future<void> _showDeleteConfirmationDialog(BuildContext context, Artist artist) async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Delete Artist'),
-          content: Text('Are you sure you want to delete ${artist.name}?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                final cubit = context.read<ArtistCubit>();
-                try {
-                  await cubit.deleteArtist(artist.artistId);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Artist deleted successfully')),
-                  );
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to delete artist: $e')),
-                  );
-                }
-              },
-              child: Text('Delete'),
-            ),
-          ],
+      // Verificar si el widget está montado antes de mostrar el SnackBar
+      if (mounted) {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text('Artist created successfully'),
+            backgroundColor: Colors.green,
+          ),
         );
-      },
-    );
+      }
+    } catch (e) {
+      if (mounted) {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text('Failed to create artist: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
