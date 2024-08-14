@@ -123,6 +123,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
                       itemBuilder: (context, index) {
                         final artist = artists[index];
                         return ListTile(
+                          
                           title: Text(artist.name),
                           subtitle: Text('${artist.genre} - ${artist.bio}'),
                         );
