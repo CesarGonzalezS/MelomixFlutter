@@ -175,7 +175,7 @@ class ApiServices {
     final response = await http.post(
       Uri.parse(Config.createAlbumEndpoint),
       headers:<String , String>{
-        'Content-Type': 'application/json; charset= UTF-8',
+        'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(album.toMap()),
     );
@@ -218,7 +218,7 @@ class ApiServices {
     final response = await http.delete(
       Uri.parse(Config.deleteAlbumEndpoint + '/$albumId'),
       headers:<String, String>{
-        'Content-Type': 'application/json; charset= UTS-8',
+        'Content-Type': 'application/json; charset=UTF-8',
       },
     );
     if (response.statusCode != 200) {
