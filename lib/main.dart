@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           create: (context) => UserCubit(apiServices: ApiServices()), // Proveedor del cubit de usuario
         ),
         BlocProvider(
-          create: (context) => ArtistCubit(artistServices: ApiServices()), // Proveedor del cubit de artista
+          create: (context) => ArtistCubit(artistServices: ApiServices()), 
         ),
       ],
       child: GetMaterialApp(

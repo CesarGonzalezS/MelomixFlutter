@@ -13,21 +13,27 @@ class Artist {
 
   // Método para convertir un objeto Artist a un mapa (JSON)
   Map<String, dynamic> toMap() {
-    return {
-      'artistId': artistId,
+    final map = <String, dynamic>{
       'name': name,
       'genre': genre,
       'bio': bio,
     };
+
+    // Incluye 'artistId' solo si no es nulo
+    if (artistId != 0) {
+      map['artistId'] = artistId;
+    }
+
+    return map;
   }
 
   // Constructor de fábrica para crear un objeto Artist desde un JSON
   factory Artist.fromJson(Map<String, dynamic> json) {
     return Artist(
-      artistId: json['artistId'],
-      name: json['name'],
-      genre: json['genre'],
-      bio: json['bio'],
+      artistId: json['artistId'] ?? 0, // Proporciona un valor por defecto si es nulo
+      name: json['name'] ?? '',       // Proporciona un valor por defecto si es nulo
+      genre: json['genre'] ?? '',     // Proporciona un valor por defecto si es nulo
+      bio: json['bio'],               // `bio` puede ser nulo
     );
   }
 }
