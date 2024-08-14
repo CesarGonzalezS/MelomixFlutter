@@ -7,6 +7,7 @@ import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/presentation/cubits/user_cubit.dart';
+import 'package:melomix/presentation/cubits/artist_cubit.dart'; // Importa el ArtistCubit
 import 'package:melomix/services/api_services.dart';
 
 void main() async {
@@ -18,8 +19,15 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => UserCubit(apiServices: ApiServices()), // Proveedor del cubit
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => UserCubit(apiServices: ApiServices()), // Proveedor del cubit de usuario
+        ),
+        BlocProvider(
+          create: (context) => ArtistCubit(artistServices: ApiServices()), // Proveedor del cubit de artista
+        ),
+      ],
       child: GetMaterialApp(
         title: 'MelomiMix',
         debugShowCheckedModeBanner: false,
@@ -35,7 +43,6 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: AppRoutes.splash, // Usa la ruta inicial definida
         getPages: AppRoutes.routes, // Usa las rutas definidas
-
       ),
     );
   }
