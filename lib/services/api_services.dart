@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:melomix/data/model/artist.dart';
 import 'package:melomix/data/model/user_model.dart';
 import 'package:melomix/data/model/songs_model.dart';
 import 'package:melomix/config/config.dart';
-//Importations of albums
+// Importations of albums
 import '../data/model/albums.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -89,6 +90,7 @@ class ApiServices {
     await prefs.setString('refresh_token', refreshToken);
     await prefs.setString('user_group', userGroup);
   }
+
   // Servicios para las canciones
   Future<void> createSong(Song song) async {
     print('API createSong called');
@@ -112,7 +114,7 @@ class ApiServices {
   Future<Song> readSong(int songId) async {
     print('API readSong called with songId=$songId');
     final response = await http.get(
-      Uri.parse(Config.getSongEndpoint.replaceAll('${songId}', songId.toString())),
+      Uri.parse(Config.getSongEndpoint.replaceAll('{songId}', songId.toString())),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -149,7 +151,7 @@ class ApiServices {
   Future<void> deleteSong(int songId) async {
     print('API deleteSong called with songId=$songId');
     final response = await http.delete(
-      Uri.parse(Config.deleteSongEndpoint.replaceAll('${songId}', songId.toString())),
+      Uri.parse(Config.deleteSongEndpoint.replaceAll('{songId}', songId.toString())),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -187,8 +189,8 @@ class ApiServices {
   Future<void> createAlbum(Album album) async {
     final response = await http.post(
       Uri.parse(Config.createAlbumEndpoint),
-      headers:<String , String>{
-        'Content-Type': 'application/json; charset= UTF-8',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(album.toMap()),
     );
@@ -199,25 +201,25 @@ class ApiServices {
     }
   }
 
-  Future<List<Album>> getAllAlbums() async{
+  Future<List<Album>> getAllAlbums() async {
     final response = await http.get(
       Uri.parse(Config.getAllAlbumsEndpoint),
-      headers:<String, String>{
+      headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body);
       return jsonResponse.map((album) => Album.fromJson(album)).toList();
-    }else{
+    } else {
       throw Exception('Failed to get all albums');
     }
   }
 
   Future<void> updateAlbum(Album album) async {
     final response = await http.put(
-      Uri.parse(Config.updateAlbumEndpoint +'/${album.albumId}'),
-      headers:<String, String>{
+      Uri.parse(Config.updateAlbumEndpoint + '/${album.albumId}'),
+      headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(album.toMap()),
@@ -230,12 +232,106 @@ class ApiServices {
   Future<void> deleteAlbum(int albumId) async {
     final response = await http.delete(
       Uri.parse(Config.deleteAlbumEndpoint + '/$albumId'),
-      headers:<String, String>{
-        'Content-Type': 'application/json; charset= UTS-8',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
       },
     );
     if (response.statusCode != 200) {
       throw Exception('Album failed to delete');
+    }
+  }
+
+  // Servicios para los artistas
+  Future<void> createArtist(Artist artist) async {
+    print('API createArtist called');
+    final response = await http.post(
+      Uri.parse(Config.postArtistEndpoint),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(artist.toMap()..remove('artistId')),
+    );
+
+    print('Response status: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      print('Artist created successfully');
+    } else {
+      print('Error: ${response.body}');
+      throw Exception('Failed to create artist');
+    }
+  }
+
+  Future<List<Artist>> getAllArtists() async {
+    print('API getAllArtists called');
+    final response = await http.get(
+      Uri.parse(Config.getAllArtistEndpoint),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print('Response status: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      return jsonResponse.map((artist) => Artist.fromJson(artist)).toList();
+    } else {
+      print('Error: ${response.body}');
+      throw Exception('Failed to get all artists');
+    }
+  }
+
+  Future<Artist> getArtist(int artistId) async {
+    print('API getArtist called with artistId=$artistId');
+    final response = await http.get(
+      Uri.parse(Config.getArtistEndpoint.replaceAll('2', artistId.toString())),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print('Response status: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      return Artist.fromJson(jsonDecode(response.body));
+    } else {
+      print('Error: ${response.body}');
+      throw Exception('Failed to load artist');
+    }
+  }
+
+  Future<void> updateArtist(Artist artist) async {
+    print('API updateArtist called');
+    final response = await http.put(
+      Uri.parse(Config.putArtistEndpoint.replaceAll('2', artist.artistId.toString())),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(artist.toMap()),
+    );
+
+    print('Response status: ${response.statusCode}');
+    if (response.statusCode != 200) {
+      print('Error: ${response.body}');
+      throw Exception('Failed to update artist');
+    } else {
+      print('Artist updated successfully');
+    }
+  }
+
+  Future<void> deleteArtist(int artistId) async {
+    print('API deleteArtist called with artistId=$artistId');
+    final response = await http.delete(
+      Uri.parse(Config.deleteArtistEndpoint.replaceAll('2', artistId.toString())),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    print('Response status: ${response.statusCode}');
+    if (response.statusCode != 200) {
+      print('Error: ${response.body}');
+      throw Exception('Failed to delete artist');
+    } else {
+      print('Artist deleted successfully');
     }
   }
 }
