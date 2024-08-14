@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:melomix/presentation/cubits/artistCubit.dart';
 import 'package:melomix/presentation/cubits/artistState.dart';
 import 'package:melomix/data/model/artist.dart';
+import 'package:melomix/services/api_services.dart';
 
 class ArtistScreen extends StatelessWidget {
   @override
@@ -14,7 +15,7 @@ class ArtistScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: BlocProvider(
-          create: (context) => ArtistCubit(artistServices: ApiServices()), // Proveedor temporal del cubit
+          create: (context) => ArtistCubit(artistServices: ApiServices()),
           child: CreateArtistForm(),
         ),
       ),

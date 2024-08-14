@@ -7,7 +7,7 @@ import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/presentation/cubits/user_cubit.dart';
-import 'package:melomix/presentation/cubits/artist_cubit.dart'; // Importa el ArtistCubit
+import 'package:melomix/presentation/cubits/artistCubit.dart'; // Importa el ArtistCubit
 import 'package:melomix/services/api_services.dart';
 
 void main() async {
