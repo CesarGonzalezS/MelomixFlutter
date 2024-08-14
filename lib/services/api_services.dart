@@ -5,6 +5,7 @@ import 'package:melomix/data/model/songs_model.dart';
 import 'package:melomix/config/config.dart';
 //Importations of albums
 import '../data/model/albums.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiServices {
   Future<void> createUser(User_model user) async {
@@ -44,38 +45,50 @@ class ApiServices {
   }
 
   // Servicio de login
-  Future<bool> loginUser(String email, String password) async {
-    print('API loginUser called with email=$email');
+  Future<bool> loginUser(String username, String password) async {
+    print('API loginUser called with email=$username and password=$password');
 
-    final response = await http.post(
-      Uri.parse(Config.login),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(Config.login),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
+      );
 
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      if (responseData['success'] == true) {
-        print('Login successful');
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        await _saveUserSession(
+          responseData['id_token'],
+          responseData['access_token'],
+          responseData['refresh_token'],
+          responseData['user_group'],
+        );
         return true;
       } else {
-        print('Login failed: ${responseData['message']}');
+        print('Login failed with status: ${response.statusCode}');
         return false;
       }
-    } else {
-      print('Login failed with status: ${response.statusCode}');
+    } catch (e) {
+      print('Error al realizar la solicitud de inicio de sesión: $e');
       return false;
     }
   }
 
+  Future<void> _saveUserSession(String idToken, String accessToken, String refreshToken, String userGroup) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('id_token', idToken);
+    await prefs.setString('access_token', accessToken);
+    await prefs.setString('refresh_token', refreshToken);
+    await prefs.setString('user_group', userGroup);
+  }
   // Servicios para las canciones
   Future<void> createSong(Song song) async {
     print('API createSong called');
