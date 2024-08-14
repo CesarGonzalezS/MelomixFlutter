@@ -1,12 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:melomix/data/model/albums.dart';
+import 'package:melomix/data/repository/album_repository.dart';
 import 'package:melomix/services/api_services.dart';
 import 'albumState.dart';
 
 class AlbumCubit extends Cubit<AlbumState> {
   final ApiServices apiServices;
 
-  AlbumCubit({required this.apiServices}) : super(AlbumInitial());
+  AlbumCubit({required this.apiServices, required AlbumRepository albumRepository}) : super(AlbumInitial());
 
   //Methods:
   //Creating a new Album

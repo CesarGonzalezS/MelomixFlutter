@@ -1,105 +1,307 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:melomix/data/model/albums.dart';
 import 'package:melomix/presentation/cubits/album/albumCubit.dart';
 import 'package:melomix/presentation/cubits/album/albumState.dart';
-import '../../services/api_services.dart';
 
-class AlbumScreen extends StatelessWidget {
+class AlbumScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AlbumCubit(apiServices: ApiServices()),
-      child: AlbumsFavoritesPage(),
-    );
-  }
+  _AlbumScreenState createState() => _AlbumScreenState();
 }
 
-class AlbumsFavoritesPage extends StatelessWidget {
+class _AlbumScreenState extends State<AlbumScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Cargar los álbumes al iniciar la pantalla
+    context.read<AlbumCubit>().loadAlbums();
+  }
+
   @override
   Widget build(BuildContext context) {
-    context.read<AlbumCubit>().loadAlbums(); // Load albums on init
-
     return Scaffold(
-      appBar: AppBar(title: Text('Tus Álbumes Favoritos')),
+      appBar: AppBar(
+        title: Text('Albums'),
+        centerTitle: true,
+        backgroundColor: Colors.grey[900],
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              _showAddAlbumModal(context);
+            },
+          ),
+        ],
+      ),
+      backgroundColor: Colors.black,
       body: BlocBuilder<AlbumCubit, AlbumState>(
         builder: (context, state) {
           if (state is AlbumLoading) {
-            return CircularProgressIndicator();
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           } else if (state is AlbumSuccess) {
-            return ListView.builder(
-              itemCount: state.albums.length + 1, // +1 for the add button
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4, // Cuatro columnas
+                crossAxisSpacing: 10, // Espacio entre columnas
+                mainAxisSpacing: 10, // Espacio entre filas
+                childAspectRatio: 3 / 4, // Relación de aspecto de las tarjetas
+              ),
+              padding: const EdgeInsets.all(16),
+              itemCount: state.albums.length,
               itemBuilder: (context, index) {
-                if (index == state.albums.length) {
-                  return ListTile(
-                    leading: Icon(Icons.add),
-                    title: Text('Agregar Nuevo Álbum'),
-                    onTap: () => _addNewAlbum(context),
-                  );
-                }
-                return ListTile(
-                  title: Text(state.albums[index].title),
-                  subtitle: Text('Release Date: ${state.albums[index].releaseDate.toIso8601String()}'),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete),
-                    onPressed: () => _confirmDelete(context, state.albums[index].albumId),
+                Album album = state.albums[index];
+                return Card(
+                  color: Colors.grey[850],
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: InkWell(
+                    onTap: () {
+                      // Navegación a la pantalla de detalles o edición
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: Text(
+                                album.title,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Release Date: ${album.releaseDate.toLocal()}',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          Spacer(),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
               },
             );
           } else if (state is AlbumError) {
-            return Text('Error: ${state.message}');
+            return Center(
+              child: Text(
+                'Failed to load albums: ${state.message}',
+                style: TextStyle(color: Colors.red),
+              ),
+            );
+          } else {
+            return Center(
+              child: Text(
+                'No albums available',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
           }
-          return Text('Unexpected state');
         },
       ),
     );
   }
 
-  void _addNewAlbum(BuildContext context) async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirmar'),
-        content: Text('¿Estás seguro de querer agregar un nuevo álbum?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text('Sí'),
-          ),
-        ],
-      ),
-    );
+  void _showAddAlbumModal(BuildContext context) {
+    TextEditingController titleController = TextEditingController();
+    TextEditingController releaseDateController = TextEditingController();
+    TextEditingController artistIdController = TextEditingController();
 
-    if (result == true) {
-// Aquí agregar lógica para añadir un nuevo álbum
-// Ejemplo: context.read<AlbumCubit>().addAlbum(newAlbum);
-    }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.grey[850],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (context) {
+        bool isFormValid = titleController.text.isNotEmpty &&
+            releaseDateController.text.isNotEmpty &&
+            artistIdController.text.isNotEmpty;
+
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(
+                      labelText: 'Title',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    onChanged: (_) {
+                      setState(() {
+                        isFormValid = titleController.text.isNotEmpty &&
+                            releaseDateController.text.isNotEmpty &&
+                            artistIdController.text.isNotEmpty;
+                      });
+                    },
+                  ),
+                  TextField(
+                    controller: releaseDateController,
+                    decoration: InputDecoration(
+                      labelText: 'Release Date (yyyy-mm-dd)',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    onChanged: (_) {
+                      setState(() {
+                        isFormValid = titleController.text.isNotEmpty &&
+                            releaseDateController.text.isNotEmpty &&
+                            artistIdController.text.isNotEmpty;
+                      });
+                    },
+                  ),
+                  TextField(
+                    controller: artistIdController,
+                    decoration: InputDecoration(
+                      labelText: 'Artist ID',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    keyboardType: TextInputType.number,
+                    onChanged: (_) {
+                      setState(() {
+                        isFormValid = titleController.text.isNotEmpty &&
+                            releaseDateController.text.isNotEmpty &&
+                            artistIdController.text.isNotEmpty;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          'Cancelar',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      TextButton(
+                        onPressed: isFormValid
+                            ? () {
+                          Navigator.of(context).pop();
+                          _showConfirmationModal(
+                            context,
+                            titleController.text,
+                            releaseDateController.text,
+                            int.parse(artistIdController.text),
+                          );
+                        }
+                            : null,
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            isFormValid ? Colors.green : Colors.green[900],
+                          ),
+                          foregroundColor: MaterialStateProperty.all(
+                            Colors.white,
+                          ),
+                        ),
+                        child: Text('Aceptar'),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 
-  void _confirmDelete(BuildContext context, int albumId) async {
-    final result = await showDialog<bool>(
+  void _showConfirmationModal(
+      BuildContext context, String title, String releaseDate, int artistId) {
+    showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirmar'),
-        content: Text('¿Estás seguro de querer eliminar este álbum?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
-          ),
-          TextButton(
-            onPressed: () {
-              context.read<AlbumCubit>().deleteAlbum(albumId);
-              Navigator.of(context).pop(true);
-            },
-            child: Text('Sí'),
-          ),
-        ],
-      ),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("¿Estás seguro?"),
+          content: Text("Estás a punto de agregar este álbum: $title."),
+          actions: [
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Sí"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _addAlbum(context, title, releaseDate, artistId);
+              },
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  void _addAlbum(BuildContext context, String title, String releaseDate, int artistId) {
+    final newAlbum = Album(
+      albumId: 0, // Este campo puede ser ignorado si lo maneja el backend
+      title: title,
+      releaseDate: DateTime.parse(releaseDate),
+      artistId: artistId,
+    );
+
+    context.read<AlbumCubit>().createAlbum(newAlbum);
   }
 }
