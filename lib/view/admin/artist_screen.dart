@@ -223,7 +223,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
 
   Future<void> _addArtist(BuildContext context, String name, String genre, String bio) async {
     final newArtist = Artist(
-      artistId: 0, // Este campo puede ser ignorado si lo maneja el backend
+      artistId: '', // Usar cadena vacía en lugar de 0
       name: name,
       genre: genre,
       bio: bio,
