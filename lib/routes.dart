@@ -1,4 +1,3 @@
-// routes.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:melomix/view/splash_view.dart';
@@ -13,6 +12,7 @@ import 'package:melomix/view/admin/songs_screen.dart';
 import 'package:melomix/view/admin/admin_screen.dart';
 import 'package:melomix/view/admin/favorites_screen.dart';
 import 'package:melomix/view/home/home_view.dart';
+import 'package:melomix/middleware/auth_middleware.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -58,26 +58,36 @@ class AppRoutes {
     GetPage(
       name: admin,
       page: () => HomeAdmin(),
+      middlewares: [AuthMiddleware()], // Aplicar middleware aquí
     ),
     GetPage(
       name: albums,
       page: () => AlbumScreen(),
+      middlewares: [AuthMiddleware()], // Aplicar middleware aquí
+
     ),
     GetPage(
       name: artists,
       page: () => ArtistScreen(),
+      middlewares: [AuthMiddleware()], // Aplicar middleware aquí
+
     ),
     GetPage(
       name: songs,
       page: () => SongsScreen(),
+      middlewares: [AuthMiddleware()], // Aplicar middleware aquí
+
     ),
     GetPage(
       name: adminCrud,
       page: () => AdminScreen(),
+      middlewares: [AuthMiddleware()], // Aplicar middleware aquí
     ),
     GetPage(
       name: favorites,
       page: () => FavoritesScreen(),
+      middlewares: [AuthMiddleware()], // Aplicar middleware aquí
+
     ),
   ];
 }

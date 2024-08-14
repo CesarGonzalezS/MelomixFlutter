@@ -1,7 +1,8 @@
-// login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:melomix/routes.dart';
+import 'package:melomix/services/api_services.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -10,14 +11,10 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Lista de usuarios administradores locales
-  final List<Map<String, String>> _localAdminUsers = [
-    {'email': 'admin', 'password': 'admin'},
-    {'email': 'admin456', 'password': 'admin'},
-  ];
+  final ApiServices _apiServices = ApiServices(); // Instancia del servicio de API
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +36,11 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               children: [
                 TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
+                  controller: _usernameController,
+                  decoration: InputDecoration(labelText: 'Username'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Por favor ingrese un email';
+                      return 'Por favor ingrese un nombre de usuario';
                     }
                     return null;
                   },
@@ -61,21 +58,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (_formKey.currentState?.validate() ?? false) {
-                      String enteredEmail = _emailController.text.trim().toLowerCase();
-                      String enteredPassword = _passwordController.text.trim();
+                      String username = _usernameController.text.trim();
+                      String password = _passwordController.text.trim();
 
-                      print('Credenciales ingresadas: email=$enteredEmail, password=$enteredPassword');
+                      print('Credenciales ingresadas: username=$username, password=$password');
 
-                      // Verificar si es un usuario administrador local
-                      bool isLocalAdmin = _localAdminUsers.any((admin) =>
-                      admin['email']!.toLowerCase() == enteredEmail && admin['password'] == enteredPassword
-                      );
+                      bool loginSuccess = await _apiServices.loginUser(username, password);
 
-                      if (isLocalAdmin) {
-                        print('Usuario administrador local autenticado');
-                        Get.toNamed(AppRoutes.admin); // Navega a la pantalla de administrador
+                      if (loginSuccess) {
+                        print('Inicio de sesión exitoso');
+
+                        // Verifica el grupo de usuario y redirige a la ruta correspondiente
+                        final prefs = await SharedPreferences.getInstance();
+                        String? userGroup = prefs.getString('user_group');
+
+                        if (userGroup == 'admin') {
+                          Get.toNamed(AppRoutes.admin);
+                        } else {
+                          Get.toNamed(AppRoutes.home);
+                        }
                       } else {
                         print('Credenciales incorrectas');
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -89,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
-                    Get.toNamed(AppRoutes.main);
+                    Get.toNamed(AppRoutes.home);
                   },
                   child: Text('Ir al Home'),
                 ),
