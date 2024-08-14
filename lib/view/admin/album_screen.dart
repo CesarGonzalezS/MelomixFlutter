@@ -51,7 +51,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
               padding: const EdgeInsets.all(16),
               itemCount: state.albums.length,
               itemBuilder: (context, index) {
-                Album album = state.albums[index];
+                final album = state.albums[index];
                 return Card(
                   color: Colors.grey[850],
                   shape: RoundedRectangleBorder(
@@ -59,7 +59,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
                   ),
                   child: InkWell(
                     onTap: () {
-                      // Navegación a la pantalla de detalles o edición
+                      // Puedes agregar navegación a una pantalla de detalles o edición
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -91,13 +91,22 @@ class _AlbumScreenState extends State<AlbumScreen> {
                             textAlign: TextAlign.center,
                           ),
                           Spacer(),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Icon(
-                              Icons.arrow_forward_ios,
-                              color: Colors.white,
-                              size: 16,
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.white),
+                                onPressed: () {
+                                  _showEditAlbumModal(context, album);
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  _showDeleteConfirmationModal(context, album);
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
@@ -130,6 +139,20 @@ class _AlbumScreenState extends State<AlbumScreen> {
     TextEditingController titleController = TextEditingController();
     TextEditingController releaseDateController = TextEditingController();
     TextEditingController artistIdController = TextEditingController();
+
+    Future<void> _selectDate(BuildContext context) async {
+      final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2101),
+      );
+      if (picked != null) {
+        setState(() {
+          releaseDateController.text = "${picked.toLocal()}".split(' ')[0];
+        });
+      }
+    }
 
     showModalBottomSheet(
       context: context,
@@ -179,7 +202,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
                   TextField(
                     controller: releaseDateController,
                     decoration: InputDecoration(
-                      labelText: 'Release Date (yyyy-mm-dd)',
+                      labelText: 'Release Date',
                       labelStyle: TextStyle(color: Colors.white),
                       enabledBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.white70),
@@ -187,15 +210,13 @@ class _AlbumScreenState extends State<AlbumScreen> {
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.green),
                       ),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today, color: Colors.white),
+                        onPressed: () => _selectDate(context),
+                      ),
                     ),
                     style: TextStyle(color: Colors.white),
-                    onChanged: (_) {
-                      setState(() {
-                        isFormValid = titleController.text.isNotEmpty &&
-                            releaseDateController.text.isNotEmpty &&
-                            artistIdController.text.isNotEmpty;
-                      });
-                    },
+                    readOnly: true, // Para que solo pueda seleccionar la fecha
                   ),
                   TextField(
                     controller: artistIdController,
@@ -266,14 +287,196 @@ class _AlbumScreenState extends State<AlbumScreen> {
     );
   }
 
-  void _showConfirmationModal(
-      BuildContext context, String title, String releaseDate, int artistId) {
+  void _showEditAlbumModal(BuildContext context, Album album) {
+    TextEditingController titleController = TextEditingController(text: album.title);
+    TextEditingController releaseDateController = TextEditingController(text: album.releaseDate.toIso8601String().split('T')[0]);
+    TextEditingController artistIdController = TextEditingController(text: album.artistId.toString());
+
+    Future<void> _selectDate(BuildContext context) async {
+      final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: album.releaseDate,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2101),
+      );
+      if (picked != null) {
+        setState(() {
+          releaseDateController.text = "${picked.toLocal()}".split(' ')[0];
+        });
+      }
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.grey[850],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (context) {
+        bool isFormValid = titleController.text.isNotEmpty &&
+            releaseDateController.text.isNotEmpty &&
+            artistIdController.text.isNotEmpty;
+
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: StatefulBuilder(
+            builder: (context, setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(
+                      labelText: 'Title',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    onChanged: (_) {
+                      setState(() {
+                        isFormValid = titleController.text.isNotEmpty &&
+                            releaseDateController.text.isNotEmpty &&
+                            artistIdController.text.isNotEmpty;
+                      });
+                    },
+                  ),
+                  TextField(
+                    controller: releaseDateController,
+                    decoration: InputDecoration(
+                      labelText: 'Release Date',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today, color: Colors.white),
+                        onPressed: () => _selectDate(context),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    readOnly: true, // Para que solo pueda seleccionar la fecha
+                  ),
+                  TextField(
+                    controller: artistIdController,
+                    decoration: InputDecoration(
+                      labelText: 'Artist ID',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    keyboardType: TextInputType.number,
+                    onChanged: (_) {
+                      setState(() {
+                        isFormValid = titleController.text.isNotEmpty &&
+                            releaseDateController.text.isNotEmpty &&
+                            artistIdController.text.isNotEmpty;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          'Cancelar',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      TextButton(
+                        onPressed: isFormValid
+                            ? () {
+                          Navigator.of(context).pop();
+                          _showConfirmationModal(
+                            context,
+                            titleController.text,
+                            releaseDateController.text,
+                            int.parse(artistIdController.text),
+                            albumId: album.albumId,
+                          );
+                        }
+                            : null,
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            isFormValid ? Colors.green : Colors.green[900],
+                          ),
+                          foregroundColor: MaterialStateProperty.all(
+                            Colors.white,
+                          ),
+                        ),
+                        child: Text('Aceptar'),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmationModal(BuildContext context, Album album) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("¿Estás seguro?"),
-          content: Text("Estás a punto de agregar este álbum: $title."),
+          content: Text("Estás a punto de eliminar el álbum: ${album.title}."),
+          actions: [
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Eliminar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteAlbum(context, album.albumId);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showConfirmationModal(
+      BuildContext context, String title, String releaseDate, int artistId, {int? albumId}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("¿Estás seguro?"),
+          content: Text(albumId == null
+              ? "Estás a punto de agregar este álbum: $title."
+              : "Estás a punto de actualizar este álbum: $title."),
           actions: [
             TextButton(
               child: Text("Cancelar"),
@@ -285,7 +488,11 @@ class _AlbumScreenState extends State<AlbumScreen> {
               child: Text("Sí"),
               onPressed: () {
                 Navigator.of(context).pop();
-                _addAlbum(context, title, releaseDate, artistId);
+                if (albumId == null) {
+                  _addAlbum(context, title, releaseDate, artistId);
+                } else {
+                  _updateAlbum(context, albumId, title, releaseDate, artistId);
+                }
               },
             ),
           ],
@@ -303,5 +510,20 @@ class _AlbumScreenState extends State<AlbumScreen> {
     );
 
     context.read<AlbumCubit>().createAlbum(newAlbum);
+  }
+
+  void _updateAlbum(BuildContext context, int albumId, String title, String releaseDate, int artistId) {
+    final updatedAlbum = Album(
+      albumId: albumId,
+      title: title,
+      releaseDate: DateTime.parse(releaseDate),
+      artistId: artistId,
+    );
+
+    context.read<AlbumCubit>().updateAlbum(updatedAlbum);
+  }
+
+  void _deleteAlbum(BuildContext context, int albumId) {
+    context.read<AlbumCubit>().deleteAlbum(albumId);
   }
 }
