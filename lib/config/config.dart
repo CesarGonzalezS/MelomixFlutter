@@ -12,11 +12,11 @@ class Config {
     static const String deleteAlbumEndpoint="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/delete_albums";
 
     // Songs
-    static const String getAllSongsEndpoint = 'https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_song/';
-    static const String getSongEndpoint = 'https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_song/1';
-    static const String postSongEndpoint = 'https://5zappruc5i.execute-api.us-east-2.amazonaws.com/Prod/create_song';
-    static const String putSongEndpoint = 'https://5zappruc5i.execute-api.us-east-2.amazonaws.com/Prod/update_song';
-    static const String deleteSongEndpoint = 'https://5zappruc5i.execute-api.us-east-2.amazonaws.com/Prod/delete_song/1'; 
+    static const String getAllSongsEndpoint = 'https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_all_songs';
+    static const String getSongEndpoint = 'https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_song/';
+    static const String postSongEndpoint = 'https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/create_song';
+    static const String putSongEndpoint = 'https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/update_song';
+    static const String deleteSongEndpoint = 'https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/delete_song/'; 
 
     // Users
     static const String addUserEndpoint='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/add_user';
