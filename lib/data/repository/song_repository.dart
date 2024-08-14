@@ -14,24 +14,13 @@ class SongRepository {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(song.toJson()..remove('song_id')), // Asegúrate de usar 'song_id'
+      body: jsonEncode(song.toMap()), // Usa 'toMap' para excluir 'song_id'
     );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to create song: ${response.body}');
-    }
-  }
-
-  // Leer una canción por ID
-  Future<Song> readSong(int songId) async {
-    final response = await http.get(
-      Uri.parse('$apiUrl/read_song?song_id=$songId'),
-    );
-
-    if (response.statusCode == 200) {
-      return Song.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to load song: ${response.body}');
+      print('Song created successfully');
     }
   }
 
@@ -42,7 +31,7 @@ class SongRepository {
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(song.toJson()),
+      body: jsonEncode(song.toJson()), // Usa 'toJson' para incluir 'song_id'
     );
 
     if (response.statusCode != 200) {
@@ -51,13 +40,33 @@ class SongRepository {
   }
 
   // Eliminar una canción por ID
-  Future<void> deleteSong(int songId) async {
+  Future<void> deleteSong(String songId) async {
     final response = await http.delete(
       Uri.parse('$apiUrl/delete_song?song_id=$songId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
     );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete song: ${response.body}');
+    }
+  }
+
+  // Obtener todas las canciones
+  Future<List<Song>> getAllSongs() async {
+    final response = await http.get(
+      Uri.parse('$apiUrl/read_all_songs'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      return jsonResponse.map((song) => Song.fromJson(song)).toList();
+    } else {
+      throw Exception('Failed to load songs: ${response.body}');
     }
   }
 }

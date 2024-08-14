@@ -77,39 +77,48 @@ class ApiServices {
   }
 
   // Servicios para las canciones
-  Future<void> createSong(Song song) async {
+
+Future<void> createSong(Song song) async {
     final response = await http.post(
       Uri.parse(Config.postSongEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(song.toMap()),
+      body: jsonEncode(song.toJson()), // Usar toJson para enviar el objeto canción
     );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to create song');
-    }
-  }
-
-  Future<List<Song>> getAllSongs() async {
-    final response = await http.get(
-      Uri.parse(Config.getAllSongsEndpoint),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      List<dynamic> jsonResponse = jsonDecode(response.body);
-      return jsonResponse.map((song) => Song.fromJson(song)).toList();
     } else {
-      throw Exception('Failed to load songs');
+      print('Song created successfully');
     }
   }
 
-  Future<Song> getSong(int songId) async {
+  // Obtener todas las canciones
+  Future<List<Song>> getAllSongs() async {
+  final response = await http.get(
+    Uri.parse(Config.getAllSongsEndpoint),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+
+  print('Response Status: ${response.statusCode}');
+  print('Response Body: ${response.body}'); // Imprime la respuesta cruda
+
+  if (response.statusCode == 200) {
+    print("12345");
+    List<dynamic> jsonResponse = jsonDecode(response.body);
+    return jsonResponse.map((song) => Song.fromJson(song)).toList();
+  } else {
+    throw Exception('Failed to load songs');
+  }
+}
+
+  // Obtener una canción por ID
+  Future<Song> getSong(String songId) async {
     final response = await http.get(
-      Uri.parse('${Config.getSongEndpoint.replaceAll('1', songId.toString())}'),
+      Uri.parse('${Config.getSongEndpoint.replaceAll('1', songId)}'), // Reemplaza el placeholder por el songId
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -122,23 +131,27 @@ class ApiServices {
     }
   }
 
+  // Actualizar una canción existente
   Future<void> updateSong(Song song) async {
     final response = await http.put(
       Uri.parse(Config.putSongEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(song.toJson()),
+      body: jsonEncode(song.toJson()), // Usar toJson para enviar los datos actualizados
     );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update song');
+    } else {
+      print('Song updated successfully');
     }
   }
 
-  Future<void> deleteSong(int songId) async {
+  // Eliminar una canción por ID
+  Future<void> deleteSong(String songId) async {
     final response = await http.delete(
-      Uri.parse('${Config.deleteSongEndpoint.replaceAll('1', songId.toString())}'),
+      Uri.parse('${Config.deleteSongEndpoint.replaceAll('1', songId)}'), // Reemplaza el placeholder por el songId
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -146,10 +159,12 @@ class ApiServices {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete song');
+    } else {
+      print('Song deleted successfully');
     }
   }
-}
-  
+
+
   // Servicios para los álbumes
   Future<void> createAlbum(Album album) async {
     final response = await http.post(
@@ -205,4 +220,4 @@ class ApiServices {
       throw Exception('Album failed to delete');
     }
   }
-
+}
