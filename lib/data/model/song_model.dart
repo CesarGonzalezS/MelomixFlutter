@@ -1,14 +1,13 @@
 class Song {
-  final String songId;
+  final int? songId;
   final String title;
   final String duration;
-  final int? albumId; // Opcional
+  final int? albumId;
   final int artistId;
   final String genre;
 
-  // Constructor con valores predeterminados
   Song({
-    this.songId = '', // Valor predeterminado
+    this.songId,
     required this.title,
     required this.duration,
     this.albumId,
@@ -16,44 +15,33 @@ class Song {
     required this.genre,
   });
 
-  // Convertir de JSON a una instancia de Song
+  // Método fromJson para convertir JSON a una instancia de Song
   factory Song.fromJson(Map<String, dynamic> json) {
-  return Song(
-    songId: json['song_id']?? '', // Asegura que sea un String
-    title: json['title'] ?? '',
-    duration: json['duration'] ?? '',
-    albumId: json['album_id'] is int
-        ? json['album_id']
-        : json['album_id'] != null
-            ? int.tryParse(json['album_id'].toString())
-            : null,
-    artistId: json['artist_id'] is int
-        ? json['artist_id']
-        : int.tryParse(json['artist_id'].toString()) ?? 0,
-    genre: json['genre'] ?? '',
-  );
-}
-
-  // Convertir de una instancia de Song a un mapa JSON completo
-  Map<String, dynamic> toJson() {
-    return {
-      'song_id': songId,
-      'title': title,
-      'duration': duration,
-      'album_id': albumId,
-      'artist_id': artistId,
-      'genre': genre,
-    };
+    return Song(
+      // Aquí aseguramos que si 'song_id' es String, se convierte a int
+      songId: json['song_id'] is int ? json['song_id'] : int.tryParse(json['song_id'] ?? ''),
+      title: json['title'] as String,
+      duration: json['duration'] as String,
+      // Igual para 'album_id' que podría ser nulo
+      albumId: json['album_id'] is int ? json['album_id'] : int.tryParse(json['album_id'] ?? ''),
+      // Igual para 'artist_id'
+      artistId: json['artist_id'] is int ? json['artist_id'] : int.parse(json['artist_id']),
+      genre: json['genre'] as String,
+    );
   }
 
-  // Convertir de una instancia de Song a un mapa parcial para enviar al servidor
+  // Método toMap para convertir una instancia de Song a un Map que se puede convertir a JSON
   Map<String, dynamic> toMap() {
-    return {
+    final map = {
       'title': title,
       'duration': duration,
       'album_id': albumId,
       'artist_id': artistId,
       'genre': genre,
     };
+    if (songId != null) {
+      map['song_id'] = songId;
+    }
+    return map;
   }
 }

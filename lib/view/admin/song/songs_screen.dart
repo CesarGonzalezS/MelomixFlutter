@@ -7,101 +7,170 @@ import 'package:melomix/data/model/song_model.dart';
 import 'package:melomix/view/admin/song/add_song_screen.dart';
 import 'package:melomix/view/admin/song/edit_song_screen.dart';
 import 'package:melomix/view/admin/song/delete_song_screen.dart';
+import 'package:melomix/data/model/song_model.dart';
 
-class SongsScreen extends StatelessWidget {
+class SongsScreen extends StatefulWidget {
+  @override
+  _SongsScreenState createState() => _SongsScreenState();
+}
+
+class _SongsScreenState extends State<SongsScreen> {
+  final _titleController = TextEditingController();
+  final _durationController = TextEditingController();
+  final _albumIdController = TextEditingController();
+  final _artistIdController = TextEditingController();
+  final _genreController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<SongCubit>().getAllSongs();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SongCubit(apiServices: ApiServices())..getAllSongs(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Songs'),
-        ),
-        body: BlocBuilder<SongCubit, SongState>(
-          builder: (context, state) {
-            if (state is SongLoading) {
-              return Center(child: CircularProgressIndicator());
-            } else if (state is SongSuccess) {
-              final songs = state.songs;
-              return SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: DataTable(
-                    columns: [
-                      DataColumn(label: Text('Title')),
-                      DataColumn(label: Text('Duration')),
-                      DataColumn(label: Text('Genre')),
-                      DataColumn(label: Text('Artist ID')),
-                      DataColumn(label: Text('Album ID')),
-                      DataColumn(label: Text('Actions')),
-                    ],
-                    rows: songs.map((song) {
-                      return DataRow(cells: [
-                        DataCell(Text(song.title)),
-                        DataCell(Text(song.duration.toString())),
-                        DataCell(Text(song.genre)),
-                        DataCell(Text(song.artistId.toString())),
-                        DataCell(Text(song.albumId.toString())),
-                        DataCell(Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditSongScreen(song: song),
-                                  ),
-                                );
-                              },
-                            ),
-                            // Eliminado el botón de eliminar aquí
-                          ],
-                        )),
-                      ]);
-                    }).toList(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Songs'),
+      ),
+      body: BlocBuilder<SongCubit, SongState>(
+        builder: (context, state) {
+          if (state is SongLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else if (state is SongSuccess) {
+            return ListView.builder(
+              itemCount: state.songs.length,
+              itemBuilder: (context, index) {
+                final song = state.songs[index];
+                return ListTile(
+                  title: Text(song.title),
+                  subtitle: Text('Genre: ${song.genre} | Duration: ${song.duration}'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () {
+                      context.read<SongCubit>().deleteSong(song.songId!);
+                    },
                   ),
+                  onTap: () {
+                    _titleController.text = song.title;
+                    _durationController.text = song.duration;
+                    _albumIdController.text = song.albumId?.toString() ?? '';
+                    _artistIdController.text = song.artistId.toString();
+                    _genreController.text = song.genre;
+
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Edit Song'),
+                        content: _buildSongForm(),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              final updatedSong = Song(
+                                songId: song.songId,
+                                title: _titleController.text,
+                                duration: _durationController.text,
+                                albumId: _albumIdController.text.isEmpty
+                                    ? null
+                                    : int.tryParse(_albumIdController.text),
+                                artistId: int.parse(_artistIdController.text),
+                                genre: _genreController.text,
+                              );
+                              context.read<SongCubit>().updateSong(updatedSong);
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Update'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: Text('Cancel'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          } else if (state is SongError) {
+            return Center(child: Text('Failed to load songs: ${state.message}'));
+          }
+          return Center(child: Text('No songs available.'));
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _clearForm();
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Create Song'),
+              content: _buildSongForm(),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    final newSong = Song(
+                      title: _titleController.text,
+                      duration: _durationController.text,
+                      albumId: _albumIdController.text.isEmpty
+                          ? null
+                          : int.tryParse(_albumIdController.text),
+                      artistId: int.parse(_artistIdController.text),
+                      genre: _genreController.text,
+                    );
+                    context.read<SongCubit>().createSong(newSong);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Create'),
                 ),
-              );
-            } else if (state is SongError) {
-              return Center(child: Text('Error: ${state.message}'));
-            } else {
-              return Center(child: Text('No songs available'));
-            }
-          },
-        ),
-        floatingActionButton: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddSongScreen(),
-                  ),
-                );
-              },
-              child: Icon(Icons.add),
-              heroTag: null,
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text('Cancel'),
+                ),
+              ],
             ),
-            SizedBox(height: 16),
-            FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DeleteSongScreen(),
-                  ),
-                );
-              },
-              child: Icon(Icons.delete),
-              heroTag: null,
-            ),
-          ],
-        ),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
+  }
+
+  Widget _buildSongForm() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextField(
+          controller: _titleController,
+          decoration: InputDecoration(labelText: 'Title'),
+        ),
+        TextField(
+          controller: _durationController,
+          decoration: InputDecoration(labelText: 'Duration'),
+        ),
+        TextField(
+          controller: _albumIdController,
+          decoration: InputDecoration(labelText: 'Album ID (Optional)'),
+          keyboardType: TextInputType.number,
+        ),
+        TextField(
+          controller: _artistIdController,
+          decoration: InputDecoration(labelText: 'Artist ID'),
+          keyboardType: TextInputType.number,
+        ),
+        TextField(
+          controller: _genreController,
+          decoration: InputDecoration(labelText: 'Genre'),
+        ),
+      ],
+    );
+  }
+
+  void _clearForm() {
+    _titleController.clear();
+    _durationController.clear();
+    _albumIdController.clear();
+    _artistIdController.clear();
+    _genreController.clear();
   }
 }

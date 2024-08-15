@@ -50,17 +50,19 @@ class _DeleteSongScreenState extends State<DeleteSongScreen> {
   }
 
   void _deleteSong(BuildContext context) {
-    final songId = _idController.text.trim();
+  final songIdString = _idController.text.trim();
 
-    if (songId.isEmpty) {
-      setState(() {
-        _errorMessage = 'Song ID cannot be empty';
-      });
-      return;
-    }
+  if (songIdString.isEmpty) {
+    setState(() {
+      _errorMessage = 'Song ID cannot be empty';
+    });
+    return;
+  }
 
+  try {
+    final songId = int.parse(songIdString);
     context.read<SongCubit>().deleteSong(songId);
-    
+
     // Optionally, handle success or failure
     context.read<SongCubit>().stream.listen((state) {
       if (state is SongSuccess) {
@@ -71,5 +73,10 @@ class _DeleteSongScreenState extends State<DeleteSongScreen> {
         });
       }
     });
+  } catch (e) {
+    setState(() {
+      _errorMessage = 'Invalid Song ID';
+    });
   }
+}
 }

@@ -12,7 +12,8 @@ class SongCubit extends Cubit<SongState> {
     try {
       emit(SongLoading());
       await apiServices.createSong(song);
-      await getAllSongs();
+      List<Song> updatedSongs = await apiServices.getAllSongs();
+      emit(SongSuccess(songs: updatedSongs));
     } catch (e) {
       emit(SongError(message: e.toString()));
     }
@@ -23,11 +24,9 @@ class SongCubit extends Cubit<SongState> {
       emit(SongLoading());
       final songs = await apiServices.getAllSongs();
       emit(SongSuccess(songs: songs));
-      print(songs);
     } catch (e) {
-      print(e);
-      print('Error123');
       emit(SongError(message: e.toString()));
+      print("ERROR EN SONG CUBIT");
     }
   }
 
@@ -35,19 +34,24 @@ class SongCubit extends Cubit<SongState> {
     try {
       emit(SongLoading());
       await apiServices.updateSong(song);
-      await getAllSongs();
+      List<Song> updatedSongs = await apiServices.getAllSongs();
+      emit(SongSuccess(songs: updatedSongs));
     } catch (e) {
       emit(SongError(message: e.toString()));
     }
   }
 
-  Future<void> deleteSong(String songId) async {
+  Future<void> deleteSong(int songId) async {
     try {
       emit(SongLoading());
       await apiServices.deleteSong(songId);
-      await getAllSongs();
+      List<Song> updatedSongs = await apiServices.getAllSongs();
+      emit(SongSuccess(songs: updatedSongs));
     } catch (e) {
       emit(SongError(message: e.toString()));
     }
   }
+
+  
+
 }
