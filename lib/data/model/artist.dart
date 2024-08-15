@@ -1,11 +1,11 @@
 class Artist {
-  final String artistId;
+  final int? artistId; // Puede ser null cuando se crea un nuevo artista
   final String name;
   final String genre;
   final String? bio; // Biografía opcional del artista
 
   Artist({
-    this.artistId = '',
+    this.artistId,
     required this.name,
     required this.genre,
     this.bio,
@@ -14,7 +14,7 @@ class Artist {
   // Método para convertir un objeto Artist a un mapa (JSON)
   Map<String, dynamic> toMap() {
     return {
-      'artistId': artistId,
+      'artist_id': artistId,
       'name': name,
       'genre': genre,
       'bio': bio,
@@ -24,10 +24,10 @@ class Artist {
   // Constructor de fábrica para crear un objeto Artist desde un JSON
   factory Artist.fromJson(Map<String, dynamic> json) {
     return Artist(
-      artistId: json['artistId']?.toString() ?? '', // Convertir a String o asignar un String vacío
-      name: json['name'] ?? '',
-      genre: json['genre'] ?? '',
-      bio: json['bio'], // `bio` puede ser nulo
+      artistId: json['artist_id'],
+      name: json['name'],
+      genre: json['genre'],
+      bio: json['bio'],
     );
   }
 }

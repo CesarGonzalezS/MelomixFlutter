@@ -25,8 +25,8 @@ class Config {
 
     //Artista
     static const String getAllArtistEndpoint ='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_all_artist';
-    static const String getArtistEndpoint ='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_artist/2';
+    static const String getArtistEndpoint ='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_artist';
     static const String postArtistEndpoint ='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/create_artist';
     static const String putArtistEndpoint ='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_all_artist';
-    static const String deleteArtistEndpoint ='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/delete_artist/2';
+    static const String deleteArtistEndpoint ='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/delete_artist';
 }
