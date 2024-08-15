@@ -39,17 +39,23 @@ class AlbumRepository {
 
   Future<void> updateAlbum(Album album) async {
     final response = await http.put(
-      Uri.parse('$apiUrl/update_album/${album.albumId}'),
+      Uri.parse('$apiUrl/update_album'), // URL sin albumId
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(album.toMap()),
+      body: jsonEncode({
+        'album_id': album.albumId,
+        'title': album.title,
+        'release_date': album.releaseDate.toIso8601String().split('T')[0],
+        'artist_id': album.artistId,
+      }),
     );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update album. Status code: ${response.statusCode}');
     }
   }
+
 
   Future<void> deleteAlbum(int albumId) async {
     final response = await http.delete(

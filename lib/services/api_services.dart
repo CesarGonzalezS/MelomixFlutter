@@ -216,7 +216,7 @@ class ApiServices {
 
   Future<void> updateAlbum(Album album) async {
     final response = await http.put(
-      Uri.parse(Config.updateAlbumEndpoint),
+      Uri.parse(Config.updateAlbumEndpoint), // URL sin albumId
       headers:<String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -227,10 +227,12 @@ class ApiServices {
         'artist_id': album.artistId,
       }),
     );
+
     if (response.statusCode != 200) {
       throw Exception('Failed to update album. Status code: ${response.statusCode}');
     }
   }
+
 
   Future<void> deleteAlbum(int albumId) async {
     final response = await http.delete(

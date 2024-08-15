@@ -41,6 +41,7 @@ class AlbumCubit extends Cubit<AlbumState> {
     }
   }
 
+
   Future<void> deleteAlbum(int albumId) async {
     try {
       emit(AlbumLoading());
