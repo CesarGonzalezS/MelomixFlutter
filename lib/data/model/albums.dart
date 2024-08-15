@@ -1,11 +1,11 @@
 class Album {
-  int albumId;
-  String title;
-  DateTime releaseDate;
-  int artistId;
+  final int? albumId; // Puede ser null cuando creamos un nuevo álbum
+  final String title;
+  final DateTime releaseDate;
+  final int artistId;
 
   Album({
-    required this.albumId,
+    this.albumId,
     required this.title,
     required this.releaseDate,
     required this.artistId,
@@ -13,10 +13,10 @@ class Album {
 
   Map<String, dynamic> toMap() {
     return {
-      'albumId': albumId,
+      'album_id': albumId,
       'title': title,
-      'releaseDate': releaseDate.toIso8601String(),
-      'artistId': artistId,
+      'release_date': releaseDate.toIso8601String(),
+      'artist_id': artistId,
     };
   }
 

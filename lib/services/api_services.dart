@@ -189,57 +189,61 @@ class ApiServices {
   Future<void> createAlbum(Album album) async {
     final response = await http.post(
       Uri.parse(Config.createAlbumEndpoint),
-      headers: <String, String>{
+      headers:<String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(album.toMap()),
+      body: jsonEncode(album.toMap()..remove('album_id')),
     );
-    if (response.statusCode == 200) {
-      print('Album created successfully');
-    } else {
-      throw Exception('Failed to create album');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create album. Status code: ${response.statusCode}');
     }
   }
 
   Future<List<Album>> getAllAlbums() async {
     final response = await http.get(
       Uri.parse(Config.getAllAlbumsEndpoint),
-      headers: <String, String>{
+      headers:<String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    if (response.statusCode == 200) {
+    if(response.statusCode == 200){
       List<dynamic> jsonResponse = jsonDecode(response.body);
       return jsonResponse.map((album) => Album.fromJson(album)).toList();
     } else {
-      throw Exception('Failed to get all albums');
+      throw Exception('Failed to get all albums. Status code: ${response.statusCode}');
     }
   }
 
   Future<void> updateAlbum(Album album) async {
     final response = await http.put(
-      Uri.parse(Config.updateAlbumEndpoint + '/${album.albumId}'),
-      headers: <String, String>{
+      Uri.parse(Config.updateAlbumEndpoint),
+      headers:<String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(album.toMap()),
+      body: jsonEncode({
+        'album_id': album.albumId,
+        'title': album.title,
+        'release_date': album.releaseDate.toIso8601String().split('T')[0],
+        'artist_id': album.artistId,
+      }),
     );
     if (response.statusCode != 200) {
-      throw Exception('Album failed to update');
+      throw Exception('Failed to update album. Status code: ${response.statusCode}');
     }
   }
 
   Future<void> deleteAlbum(int albumId) async {
     final response = await http.delete(
       Uri.parse(Config.deleteAlbumEndpoint + '/$albumId'),
-      headers: <String, String>{
+      headers:<String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
     if (response.statusCode != 200) {
-      throw Exception('Album failed to delete');
+      throw Exception('Failed to delete album. Status code: ${response.statusCode}');
     }
   }
+
 
   // Servicios para los artistas
   Future<void> createArtist(Artist artist) async {

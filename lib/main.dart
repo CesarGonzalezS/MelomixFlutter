@@ -1,4 +1,3 @@
-// main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -7,6 +6,7 @@ import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/presentation/cubits/user_cubit.dart';
+import 'package:melomix/presentation/cubits/album/albumCubit.dart'; // Importa el AlbumCubit
 import 'package:melomix/services/api_services.dart';
 
 void main() async {
@@ -18,8 +18,15 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => UserCubit(apiServices: ApiServices()), // Proveedor del cubit
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => UserCubit(apiServices: ApiServices()), // Proveedor del cubit
+        ),
+        BlocProvider(
+          create: (context) => AlbumCubit(apiServices: ApiServices()), // Proveedor del AlbumCubit
+        ),
+      ],
       child: GetMaterialApp(
         title: 'MelomiMix',
         debugShowCheckedModeBanner: false,
@@ -27,15 +34,14 @@ class MyApp extends StatelessWidget {
           fontFamily: "Circular Std",
           scaffoldBackgroundColor: TColor.bg,
           textTheme: Theme.of(context).textTheme.apply(
-                bodyColor: TColor.primaryText,
-                displayColor: TColor.primaryText,
-              ),
+            bodyColor: TColor.primaryText,
+            displayColor: TColor.primaryText,
+          ),
           colorScheme: ColorScheme.fromSeed(seedColor: TColor.primary),
           useMaterial3: false,
         ),
         initialRoute: AppRoutes.splash, // Usa la ruta inicial definida
         getPages: AppRoutes.routes, // Usa las rutas definidas
-
       ),
     );
   }

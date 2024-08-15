@@ -6,7 +6,7 @@ class Config {
     static const String login='https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/login';
 
     // Albums
-    static const String getAllAlbumsEndpoint="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_albums";
+    static const String getAllAlbumsEndpoint="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/read_all_albums";
     static const String createAlbumEndpoint="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/create_albums";
     static const String updateAlbumEndpoint="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/update_albums";
     static const String deleteAlbumEndpoint="https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod/delete_albums";
