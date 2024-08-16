@@ -21,131 +21,158 @@ class RegisterScreen extends StatelessWidget {
       create: (context) => UserCubit(apiServices: ApiServices()),
       child: Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'MelonMix',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+        appBar: AppBar(
+          title: Center(child: Text('Registro', style: TextStyle(color: Colors.white))),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: Colors.white),
+        ),
+        body: BlocListener<UserCubit, UserState>(
+          listener: (context, state) {
+            if (state is UserLoading) {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => Center(
+                  child: CircularProgressIndicator(),
                 ),
-                SizedBox(height: 30),
-                Card(
-                  color: Colors.grey[850],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+              );
+            } else if (state is UserError) {
+              Navigator.pop(context); // Cierra el diálogo de carga
+              Get.snackbar(
+                'Error',
+                state.message,
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.red,
+                colorText: Colors.white,
+              );
+            } else if (state is UserSuccess) {
+              // Guarda el username en SharedPreferences
+              StorageService().saveUserCredentials(
+                _usernameController.text,
+                _passwordController.text,
+              );
+
+              // Navega directamente a la pantalla de verificación de correo electrónico
+              Get.toNamed(AppRoutes.emailVerification, arguments: {'username': _usernameController.text});
+            }
+          },
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'MelonMix',
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                  elevation: 10,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: 350),
-                            child: _buildTextField(
-                              controller: _usernameController,
-                              labelText: 'Nombre de Usuario',
-                              validator: (value) =>
-                              value!.isEmpty ? 'El nombre de usuario es requerido' : null,
+                  SizedBox(height: 30),
+                  Card(
+                    color: Colors.grey[850],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 350),
+                              child: _buildTextField(
+                                controller: _usernameController,
+                                labelText: 'Nombre de Usuario',
+                                validator: (value) =>
+                                    value!.isEmpty ? 'El nombre de usuario es requerido' : null,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 15),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: 350),
-                            child: _buildTextField(
-                              controller: _emailController,
-                              labelText: 'Correo Electrónico',
-                              validator: (value) =>
-                              value!.isEmpty ? 'Por favor ingrese un email' : null,
-                              keyboardType: TextInputType.emailAddress,
+                            SizedBox(height: 15),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 350),
+                              child: _buildTextField(
+                                controller: _emailController,
+                                labelText: 'Correo Electrónico',
+                                validator: (value) =>
+                                    value!.isEmpty ? 'Por favor ingrese un email' : null,
+                                keyboardType: TextInputType.emailAddress,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 15),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: 350),
-                            child: _buildPasswordField(
-                              controller: _passwordController,
-                              labelText: 'Contraseña',
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Por favor ingrese una contraseña';
-                                }
-                                if (!RegExp(r'(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])')
-                                    .hasMatch(value)) {
-                                  return 'La contraseña debe contener al menos una letra mayúscula y un símbolo';
-                                }
-                                return null;
-                              },
+                            SizedBox(height: 15),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 350),
+                              child: _buildPasswordField(
+                                controller: _passwordController,
+                                labelText: 'Contraseña',
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Por favor ingrese una contraseña';
+                                  }
+                                  if (!RegExp(r'(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])')
+                                      .hasMatch(value)) {
+                                    return 'La contraseña debe contener al menos una letra mayúscula y un símbolo';
+                                  }
+                                  return null;
+                                },
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            'Sugerencias: Al menos 8 caracteres, una letra mayúscula y un símbolo',
-                            style: TextStyle(color: Colors.grey[400], fontSize: 12),
-                          ),
-                          SizedBox(height: 15),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: 350),
-                            child: _buildPasswordField(
-                              controller: _confirmPasswordController,
-                              labelText: 'Confirmar Contraseña',
-                              validator: (value) =>
-                              value != _passwordController.text ? 'Las contraseñas no coinciden' : null,
+                            SizedBox(height: 5),
+                            Text(
+                              'Sugerencias: Al menos 8 caracteres, una letra mayúscula y un símbolo',
+                              style: TextStyle(color: Colors.grey[400], fontSize: 12),
                             ),
-                          ),
-                          SizedBox(height: 30),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(maxWidth: 250),
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  final user = User_model(
-                                    username: _usernameController.text,
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    dateJoined: DateTime.now().toIso8601String(),
-                                  );
-
-                                  // Guarda el username en SharedPreferences
-                                  await StorageService().saveUserCredentials(
-                                    _usernameController.text,
-                                    _passwordController.text,
-                                  );
-
-                                  // Manda al usuario a la pantalla de verificación de email
-                                  Get.toNamed(AppRoutes.emailVerification, arguments: {'username': _usernameController.text});
-
-                                  context.read<UserCubit>().createUser(user);
-                                }
-                              },
-                              child: Text('Registrarse', style: TextStyle(fontSize: 20)),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueAccent,
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                            SizedBox(height: 15),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 350),
+                              child: _buildPasswordField(
+                                controller: _confirmPasswordController,
+                                labelText: 'Confirmar Contraseña',
+                                validator: (value) =>
+                                    value != _passwordController.text ? 'Las contraseñas no coinciden' : null,
+                              ),
+                            ),
+                            SizedBox(height: 30),
+                            ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 250),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    final user = User_model(
+                                      username: _usernameController.text,
+                                      email: _emailController.text,
+                                      password: _passwordController.text,
+                                      dateJoined: DateTime.now().toIso8601String(),
+                                    );
+                                    context.read<UserCubit>().createUser(user);
+                                  }
+                                },
+                                child: Text('Registrarse', style: TextStyle(fontSize: 20)),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueAccent,
+                                  foregroundColor: Colors.white,
+                                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(height: 20),
-                _buildAdditionalOptions(),
-              ],
+                  SizedBox(height: 20),
+                  _buildAdditionalOptions(),
+                ],
+              ),
             ),
           ),
         ),

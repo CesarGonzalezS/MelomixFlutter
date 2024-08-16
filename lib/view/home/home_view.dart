@@ -7,7 +7,51 @@ import 'package:melomix/presentation/cubits/album/albumCubit.dart';
 import 'package:melomix/presentation/cubits/album/albumState.dart';
 import 'package:melomix/services/api_services.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    HomePage(),  // Asumiendo que tienes una HomePage
+    SearchPage(), // Asumiendo que tienes una SearchPage
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        backgroundColor: Colors.grey[800], // Fondo gris del BottomNavigationBar
+        selectedItemColor: Colors.white, // Color del ítem seleccionado
+        unselectedItemColor: Colors.grey[400], // Color del ítem no seleccionado
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
   final List<String> albumImages = [
     'https://melomix.s3.us-east-2.amazonaws.com/img/img1.jpg',
     'https://melomix.s3.us-east-2.amazonaws.com/img/img2.jpg',
@@ -23,7 +67,7 @@ class HomeView extends StatelessWidget {
     'https://melomix.s3.us-east-2.amazonaws.com/img/img12.jpg',
   ];
 
-  HomeView({Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -150,7 +194,6 @@ class HomeView extends StatelessWidget {
                 ),
               ),
             ),
-            // Sección para mostrar las tarjetas de álbumes
             SliverPadding(
               padding: const EdgeInsets.all(16.0),
               sliver: BlocBuilder<AlbumCubit, AlbumState>(
@@ -257,7 +300,6 @@ class HomeView extends StatelessWidget {
                 },
               ),
             ),
-            // Footer bonito
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 32.0),
@@ -296,6 +338,15 @@ class HomeView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SearchPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Search Page'),
     );
   }
 }
