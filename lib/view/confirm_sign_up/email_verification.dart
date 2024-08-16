@@ -21,6 +21,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
+          backgroundColor: Colors.black,
           content: Text(message),
           actions: <Widget>[
             TextButton(

@@ -284,7 +284,7 @@ class ApiServices {
       Uri.parse(Config.getAllArtistEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': idToken ?? '',
+        'Authorization': idToken != '' ? 'Bearer $idToken' : '',
       },
     );
 
