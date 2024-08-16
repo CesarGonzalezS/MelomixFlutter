@@ -1,8 +1,8 @@
 class Artist {
-  final int? artistId; // Puede ser null cuando se crea un nuevo artista
+  final int? artistId;
   final String name;
   final String genre;
-  final String? bio; // Biografía opcional del artista
+  final String? bio;
 
   Artist({
     this.artistId,
@@ -11,23 +11,26 @@ class Artist {
     this.bio,
   });
 
-  // Método para convertir un objeto Artist a un mapa (JSON)
+  // Método fromJson para convertir JSON a una instancia de Artist
+  factory Artist.fromJson(Map<String, dynamic> json) {
+    return Artist(
+      artistId: json['artist_id'] is int ? json['artist_id'] : int.tryParse(json['artist_id'] ?? ''),
+      name: json['name'] as String,
+      genre: json['genre'] as String,
+      bio: json['bio'] as String?,
+    );
+  }
+
+  // Método toMap para convertir una instancia de Artist a un Map que se puede convertir a JSON
   Map<String, dynamic> toMap() {
-    return {
-      'artist_id': artistId,
+    final map = {
       'name': name,
       'genre': genre,
       'bio': bio,
     };
-  }
-
-  // Constructor de fábrica para crear un objeto Artist desde un JSON
-  factory Artist.fromJson(Map<String, dynamic> json) {
-    return Artist(
-      artistId: json['artist_id'],
-      name: json['name'],
-      genre: json['genre'],
-      bio: json['bio'],
-    );
+    if (artistId != null) {
+      map['artist_id'] = artistId.toString(); // Convertir artistId a String
+    }
+    return map;
   }
 }

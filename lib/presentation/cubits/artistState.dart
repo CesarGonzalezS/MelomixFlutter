@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:melomix/data/model/artist.dart';
+import '../../data/model/artist.dart';
 
 abstract class ArtistState extends Equatable {
   @override
@@ -17,24 +17,6 @@ class ArtistSuccess extends ArtistState {
 
   @override
   List<Object?> get props => [artists];
-}
-
-class ArtistUpdated extends ArtistState {
-  final Artist artist;
-
-  ArtistUpdated({required this.artist});
-
-  @override
-  List<Object?> get props => [artist];
-}
-
-class ArtistDeleted extends ArtistState {
-  final int artistId;
-
-  ArtistDeleted({required this.artistId});
-
-  @override
-  List<Object?> get props => [artistId];
 }
 
 class ArtistError extends ArtistState {
