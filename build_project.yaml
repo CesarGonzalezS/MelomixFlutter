@@ -19,13 +19,19 @@ jobs:
         with:
           channel: "stable"
 
-      - name:🌍 Enable Web
+      - name: 🌍 Enable Web
         run: flutter config --enable-web
 
-      - name:📦 Get packages
+      - name: Clean Build Directory
+        run: flutter clean
+
+      - name: 📦 Get packages
         run: flutter pub get
 
-      - name:🏭 Build Web Application
+      - name: Set Cache Busting Variable
+        run: echo "CACHE_BUST=$(date +%s)" >> $GITHUB_ENV
+
+      - name: 🏭 Build Web Application
         run: flutter build web --release
 
       - name: Make copy of artifacts
