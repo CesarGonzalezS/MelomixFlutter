@@ -1,4 +1,3 @@
-// main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
@@ -7,12 +6,17 @@ import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/presentation/cubits/user_cubit.dart';
-import 'package:melomix/presentation/cubits/artistCubit.dart'; // Importa el ArtistCubit
+import 'package:melomix/presentation/cubits/artist_cubit.dart'; // Importa el ArtistCubit
 import 'package:melomix/services/api_services.dart';
+import 'package:melomix/services/storage_service.dart'; // Importa tu StorageService
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupServiceLocator();
+
+  // Inicializa StorageService
+  await StorageService().init();
+
   runApp(MyApp());
 }
 
@@ -35,14 +39,15 @@ class MyApp extends StatelessWidget {
           fontFamily: "Circular Std",
           scaffoldBackgroundColor: TColor.bg,
           textTheme: Theme.of(context).textTheme.apply(
-                bodyColor: TColor.primaryText,
-                displayColor: TColor.primaryText,
-              ),
+            bodyColor: TColor.primaryText,
+            displayColor: TColor.primaryText,
+          ),
           colorScheme: ColorScheme.fromSeed(seedColor: TColor.primary),
           useMaterial3: false,
         ),
         initialRoute: AppRoutes.splash, // Usa la ruta inicial definida
         getPages: AppRoutes.routes, // Usa las rutas definidas
+        navigatorKey: Get.key, // Para manejar la navegación con GetX
       ),
     );
   }

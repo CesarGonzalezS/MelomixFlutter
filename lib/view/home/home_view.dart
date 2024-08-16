@@ -6,11 +6,18 @@ import 'package:melomix/routes.dart';
 
 class HomeView extends StatelessWidget {
   final List<String> albumImages = [
-    'assets/img/music3.jpg',
-    'assets/img/music1.png',
-    'assets/img/music2.png',
-    'assets/img/music4.png',
-    'assets/img/music5.png',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img1.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img2.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img3.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img4.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img5.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img6.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img7.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img8.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img9.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img10.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img11.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img12.jpg',
   ];
 
   @override
@@ -25,9 +32,23 @@ class HomeView extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    'assets/img/music7.png',
+                  Image.network(
+                    'https://melomix.s3.us-east-2.amazonaws.com/img/img7.jpg',
                     fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(Icons.error, color: Colors.red);
+                    },
                   ),
                   DecoratedBox(
                     decoration: BoxDecoration(
@@ -76,9 +97,23 @@ class HomeView extends StatelessWidget {
                         margin: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
-                          child: Image.asset(
+                          child: Image.network(
                             albumImages[index],
                             fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(Icons.error, color: Colors.red);
+                            },
                           ),
                         ),
                       );
@@ -123,9 +158,23 @@ class HomeView extends StatelessWidget {
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(9.0),
-                          child: Image.asset(
+                          child: Image.network(
                             albumImages[index % albumImages.length],
                             fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(Icons.error, color: Colors.red);
+                            },
                           ),
                         ),
                       ),
