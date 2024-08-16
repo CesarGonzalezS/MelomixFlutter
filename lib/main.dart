@@ -7,11 +7,18 @@ import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/presentation/cubits/user_cubit.dart';
 import 'package:melomix/presentation/cubits/album/albumCubit.dart'; // Importa el AlbumCubit
+import 'package:melomix/presentation/cubits/song_cubit.dart'; // Importa SongCubit
+import 'package:melomix/presentation/cubits/artistCubit.dart'; // Importa el ArtistCubit
 import 'package:melomix/services/api_services.dart';
+import 'package:melomix/services/storage_service.dart'; // Importa tu StorageService
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setupServiceLocator();
+
+  // Inicializa StorageService
+  await StorageService().init();
+
   runApp(MyApp());
 }
 
@@ -20,12 +27,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => UserCubit(apiServices: ApiServices()), // Proveedor del cubit
+        BlocProvider<UserCubit>(
+          create: (context) => UserCubit(apiServices: ApiServices()),
         ),
-        BlocProvider(
-          create: (context) => AlbumCubit(apiServices: ApiServices()), // Proveedor del AlbumCubit
+        BlocProvider<AlbumCubit>(
+          create: (context) => AlbumCubit(apiServices: ApiServices()),
         ),
+        BlocProvider<SongCubit>(
+          create: (context) => SongCubit(apiServices: ApiServices()),
+        ),
+        BlocProvider<ArtistCubit>(
+          create: (context) => ArtistCubit(apiServices: ApiServices()),
+        ),
+        // Agrega más providers si es necesario
       ],
       child: GetMaterialApp(
         title: 'MelomiMix',
@@ -40,8 +54,9 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: TColor.primary),
           useMaterial3: false,
         ),
-        initialRoute: AppRoutes.splash, // Usa la ruta inicial definida
-        getPages: AppRoutes.routes, // Usa las rutas definidas
+        initialRoute: AppRoutes.splash,
+        getPages: AppRoutes.routes,
+        navigatorKey: Get.key, // Para manejar la navegación con GetX
       ),
     );
   }

@@ -17,7 +17,10 @@ class HomeView extends StatelessWidget {
     'https://melomix.s3.us-east-2.amazonaws.com/img/img6.jpg',
     'https://melomix.s3.us-east-2.amazonaws.com/img/img7.jpg',
     'https://melomix.s3.us-east-2.amazonaws.com/img/img8.jpg',
-    // Puedes agregar más URLs si lo necesitas
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img9.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img10.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img11.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img12.jpg',
   ];
 
   HomeView({Key? key}) : super(key: key);
@@ -36,9 +39,23 @@ class HomeView extends StatelessWidget {
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      'assets/img/music7.png',
+                    Image.network(
+                      'https://melomix.s3.us-east-2.amazonaws.com/img/img7.jpg',
                       fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.error, color: Colors.red);
+                      },
                     ),
                     DecoratedBox(
                       decoration: BoxDecoration(
@@ -90,6 +107,20 @@ class HomeView extends StatelessWidget {
                             child: Image.network(
                               albumImages[index],
                               fit: BoxFit.cover,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null
+                                        ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                        : null,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(Icons.error, color: Colors.red);
+                              },
                             ),
                           ),
                         );
@@ -150,7 +181,7 @@ class HomeView extends StatelessWidget {
                         childAspectRatio: 1 / 1.5, // Relación de aspecto ajustada para tarjetas más pequeñas
                       ),
                       delegate: SliverChildBuilderDelegate(
-                            (context, index) {
+                        (context, index) {
                           final album = albums[index];
                           return Card(
                             color: Colors.grey[850],

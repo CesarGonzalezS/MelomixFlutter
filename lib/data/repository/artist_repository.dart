@@ -10,15 +10,15 @@ class ArtistRepository {
   // Método para crear un artista
   Future<void> createArtist(Artist artist) async {
     final response = await http.post(
-      Uri.parse('$apiUrl/create_artist'), // Asegúrate de tener la URL correcta
+      Uri.parse('$apiUrl/create_artist'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(artist.toMap()..remove('artistId')),
+      body: jsonEncode(artist.toMap()..remove('artist_id')), // Si el id es null, no lo incluimos
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to create artist');
+      throw Exception('Failed to create artist. Status code: ${response.statusCode}');
     }
   }
 
@@ -35,22 +35,27 @@ class ArtistRepository {
       List<dynamic> jsonResponse = jsonDecode(response.body);
       return jsonResponse.map((artist) => Artist.fromJson(artist)).toList();
     } else {
-      throw Exception('Failed to load artists');
+      throw Exception('Failed to load artists. Status code: ${response.statusCode}');
     }
   }
 
   // Método para actualizar un artista
   Future<void> updateArtist(Artist artist) async {
     final response = await http.put(
-      Uri.parse('$apiUrl/update_artist/${artist.artistId}'),
+      Uri.parse('$apiUrl/update_artist'), // URL sin artistId
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(artist.toMap()),
+      body: jsonEncode({
+        'artist_id': artist.artistId,
+        'name': artist.name,
+        'genre': artist.genre,
+        'bio': artist.bio,
+      }),
     );
 
     if (response.statusCode != 200) {
-      throw Exception("Failed to update artist");
+      throw Exception('Failed to update artist. Status code: ${response.statusCode}');
     }
   }
 
@@ -62,9 +67,11 @@ class ArtistRepository {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
+    print(response);
+
 
     if (response.statusCode != 200) {
-      throw Exception("Failed to delete artist");
+      throw Exception('Failed to delete artist. Status code: ${response.statusCode}');
     }
   }
 }

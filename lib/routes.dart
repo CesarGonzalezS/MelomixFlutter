@@ -8,7 +8,7 @@ import 'package:melomix/view/login/LoginScreen.dart';
 import 'package:melomix/view/admin/home_Admin.dart';
 import 'package:melomix/view/admin/album_screen.dart';
 import 'package:melomix/view/admin/artist_screen.dart';
-import 'package:melomix/view/admin/songs_screen.dart';
+import 'package:melomix/view/admin/song/songs_screen.dart';
 import 'package:melomix/view/admin/admin_screen.dart';
 import 'package:melomix/view/admin/favorites_screen.dart';
 import 'package:melomix/view/home/home_view.dart';
@@ -22,7 +22,7 @@ class AppRoutes {
   static const String passwordRecovery = '/passwordRecovery';
   static const String emailVerification = '/emailVerification';
   static const String login = '/login';
-  static const String admin = '/admin';
+  static const String homeadmin = '/homeadmin';
   static const String albums = '/albums';
   static const String artists = '/artists';
   static const String songs = '/songs';
@@ -56,35 +56,35 @@ class AppRoutes {
       page: () => LoginScreen(),
     ),
     GetPage(
-      name: admin,
+      name: AppRoutes.homeadmin,
       page: () => HomeAdmin(),
       middlewares: [AuthMiddleware()], // Aplicar middleware aquí
     ),
     GetPage(
-      name: albums,
+      name: AppRoutes.albums,
       page: () => AlbumScreen(),
       middlewares: [AuthMiddleware()], // Aplicar middleware aquí
 
     ),
     GetPage(
-      name: artists,
+      name: AppRoutes.artists,
       page: () => ArtistScreen(),
       middlewares: [AuthMiddleware()], // Aplicar middleware aquí
 
     ),
     GetPage(
-      name: songs,
+      name: AppRoutes.songs,
       page: () => SongsScreen(),
       middlewares: [AuthMiddleware()], // Aplicar middleware aquí
 
     ),
     GetPage(
-      name: adminCrud,
+      name: AppRoutes.adminCrud,
       page: () => AdminScreen(),
       middlewares: [AuthMiddleware()], // Aplicar middleware aquí
     ),
     GetPage(
-      name: favorites,
+      name: AppRoutes.favorites,
       page: () => FavoritesScreen(),
       middlewares: [AuthMiddleware()], // Aplicar middleware aquí
 
