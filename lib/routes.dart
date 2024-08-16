@@ -8,7 +8,7 @@ import 'package:melomix/view/login/LoginScreen.dart';
 import 'package:melomix/view/admin/home_Admin.dart';
 import 'package:melomix/view/admin/album_screen.dart';
 import 'package:melomix/view/admin/artist_screen.dart';
-import 'package:melomix/view/admin/songs_screen.dart';
+import 'package:melomix/view/admin/song/songs_screen.dart';
 import 'package:melomix/view/admin/admin_screen.dart';
 import 'package:melomix/view/admin/favorites_screen.dart';
 import 'package:melomix/view/home/home_view.dart';

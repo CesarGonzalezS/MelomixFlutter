@@ -1,6 +1,8 @@
 import 'dart:convert';
+
+import '../../config/config.dart';
+import '../model/song_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:melomix/data/model/songs_model.dart';
 
 class SongRepository {
   final String apiUrl;
@@ -10,11 +12,11 @@ class SongRepository {
   // Crear una nueva canción
   Future<void> createSong(Song song) async {
     final response = await http.post(
-      Uri.parse('$apiUrl/create_song'),
+      Uri.parse(Config.postSongEndpoint), // Usa la URL desde Config
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(song.toJson()..remove('song_id')), // Asegúrate de usar 'song_id'
+      body: jsonEncode(song.toMap()), // Usa 'toMap' del modelo
     );
 
     if (response.statusCode != 200) {
@@ -22,27 +24,14 @@ class SongRepository {
     }
   }
 
-  // Leer una canción por ID
-  Future<Song> readSong(int songId) async {
-    final response = await http.get(
-      Uri.parse('$apiUrl/read_song?song_id=$songId'),
-    );
-
-    if (response.statusCode == 200) {
-      return Song.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to load song: ${response.body}');
-    }
-  }
-
   // Actualizar una canción existente
   Future<void> updateSong(Song song) async {
     final response = await http.put(
-      Uri.parse('$apiUrl/update_song'),
+      Uri.parse(Config.putSongEndpoint), // Usa la URL desde Config
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(song.toJson()),
+      body: jsonEncode(song.toMap()), // Usa 'toMap' del modelo
     );
 
     if (response.statusCode != 200) {
@@ -53,11 +42,31 @@ class SongRepository {
   // Eliminar una canción por ID
   Future<void> deleteSong(int songId) async {
     final response = await http.delete(
-      Uri.parse('$apiUrl/delete_song?song_id=$songId'),
+      Uri.parse('${Config.deleteSongEndpoint}/$songId'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
     );
 
     if (response.statusCode != 200) {
       throw Exception('Failed to delete song: ${response.body}');
+    }
+  }
+
+  // Obtener todas las canciones
+  Future<List<Song>> getAllSongs() async {
+    final response = await http.get(
+      Uri.parse(Config.getAllSongsEndpoint), // Usa la URL desde Config
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonResponse = jsonDecode(response.body);
+      return jsonResponse.map((song) => Song.fromJson(song)).toList();
+    } else {
+      throw Exception('Failed to load songs: ${response.body}');
     }
   }
 }
