@@ -1,8 +1,15 @@
-// email_verification.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:melomix/routes.dart';
+import 'package:melomix/services/storage_service.dart';
+import 'package:melomix/services/api_services.dart';
 
-class EmailVerificationScreen extends StatelessWidget {
+class EmailVerificationScreen extends StatefulWidget {
+  @override
+  _EmailVerificationScreenState createState() => _EmailVerificationScreenState();
+}
+
+class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
   String _verificationCode = '';
   bool _isLoading = false;
@@ -20,7 +27,7 @@ class EmailVerificationScreen extends StatelessWidget {
               child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Get.offNamed('/login');
+                Get.offNamed(AppRoutes.login); // Redirige a la pantalla de inicio de sesión
               },
             ),
           ],
@@ -31,20 +38,39 @@ class EmailVerificationScreen extends StatelessWidget {
 
   void _verifyCode(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      _isLoading = true;
-      _errorMessage = '';
+      setState(() {
+        _isLoading = true;
+        _errorMessage = '';
+      });
 
-      await Future.delayed(Duration(seconds: 2)); // Simula la verificación
+      // Recupera el username de SharedPreferences
+      final String? username = StorageService().username;
 
-      _isLoading = false;
+      // Imprime el username y el código de verificación
+      print('Username: $username');
+      print('Verification Code: $_verificationCode');
 
-      _showAlert(context, 'Éxito', 'Su usuario ha sido verificado exitosamente.');
+      // Llama a la API para verificar el código
+      final response = await ApiServices().verifyEmail(username!, _verificationCode);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response['message'] == 'User confirmed') {
+        _showAlert(context, 'Éxito', 'Su usuario ha sido verificado exitosamente.');
+      } else {
+        setState(() {
+          _errorMessage = 'El código de verificación es incorrecto';
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final String username = Get.arguments?['username'] ?? 'Usuario';
+    // Recupera el username pasado como argumento o del Storage
+    final String username = Get.arguments?['username'] ?? StorageService().username ?? 'Usuario';
 
     return Scaffold(
       backgroundColor: Colors.black,

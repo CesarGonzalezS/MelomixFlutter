@@ -6,6 +6,7 @@ import 'package:melomix/audio_helpers/service_locator.dart';
 import 'package:melomix/common/color_extension.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/presentation/cubits/user_cubit.dart';
+import 'package:melomix/presentation/cubits/album/albumCubit.dart'; // Importa el AlbumCubit
 import 'package:melomix/presentation/cubits/song_cubit.dart'; // Importa SongCubit
 import 'package:melomix/presentation/cubits/artistCubit.dart'; // Importa el ArtistCubit
 import 'package:melomix/services/api_services.dart';
@@ -28,6 +29,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<UserCubit>(
           create: (context) => UserCubit(apiServices: ApiServices()),
+        ),
+        BlocProvider<AlbumCubit>(
+          create: (context) => AlbumCubit(apiServices: ApiServices()),
         ),
         BlocProvider<SongCubit>(
           create: (context) => SongCubit(apiServices: ApiServices()),

@@ -9,7 +9,51 @@ import 'package:melomix/presentation/cubits/song_cubit.dart';
 import 'package:melomix/presentation/cubits/song_state.dart';
 import 'package:melomix/services/api_services.dart';
 
-class HomeView extends StatelessWidget {
+class HomeView extends StatefulWidget {
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    HomePage(),  // Asumiendo que tienes una HomePage
+    SearchPage(), // Asumiendo que tienes una SearchPage
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'Search',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        backgroundColor: Colors.grey[800], // Fondo gris del BottomNavigationBar
+        selectedItemColor: Colors.white, // Color del ítem seleccionado
+        unselectedItemColor: Colors.grey[400], // Color del ítem no seleccionado
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class HomePage extends StatelessWidget {
   final List<String> albumImages = [
     'https://melomix.s3.us-east-2.amazonaws.com/img/img1.jpg',
     'https://melomix.s3.us-east-2.amazonaws.com/img/img2.jpg',
@@ -47,7 +91,7 @@ class HomeView extends StatelessWidget {
     'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica20.jpg',
   ];
 
-  HomeView({Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +123,7 @@ class HomeView extends StatelessWidget {
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
                                 ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
+                                    loadingProgress.expectedTotalBytes!
                                 : null,
                           ),
                         );
@@ -131,7 +175,7 @@ class HomeView extends StatelessWidget {
                     ),
                     SizedBox(height: 8.0),
                     Text(
-                      'Explora el mejor buscador de las canciones mas escuchadas en el mundo',
+                      'Explora el mejor buscador de las canciones más escuchadas en el mundo',
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white70,
@@ -186,7 +230,7 @@ class HomeView extends StatelessWidget {
                                               child: CircularProgressIndicator(
                                                 value: loadingProgress.expectedTotalBytes != null
                                                     ? loadingProgress.cumulativeBytesLoaded /
-                                                    loadingProgress.expectedTotalBytes!
+                                                        loadingProgress.expectedTotalBytes!
                                                     : null,
                                               ),
                                             );
@@ -208,7 +252,7 @@ class HomeView extends StatelessWidget {
                                         maxLines: 1,
                                       ),
                                       Text(
-                                        'Duración: ${song.duration} ',
+                                        'Duración: ${song.duration}',
                                         style: TextStyle(
                                           fontSize: 12,
                                           color: Colors.white70,
@@ -257,7 +301,7 @@ class HomeView extends StatelessWidget {
                     ),
                     SizedBox(height: 16.0),
                     Text(
-                      'Los álbumes disponibles mas conocidos',
+                      'Los álbumes disponibles más conocidos',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -299,7 +343,7 @@ class HomeView extends StatelessWidget {
                         childAspectRatio: 1 / 1.5, // Relación de aspecto ajustada para tarjetas más pequeñas
                       ),
                       delegate: SliverChildBuilderDelegate(
-                            (context, index) {
+                        (context, index) {
                           final album = albums[index];
                           return Card(
                             color: Colors.grey[850],
@@ -391,7 +435,7 @@ class HomeView extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'El mejor gestor de música a tu alcance. Registrate y pruebala!',
+                      'El mejor gestor de música a tu alcance. Regístrate y pruébala!',
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -414,6 +458,15 @@ class HomeView extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class SearchPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text('Search Page'),
     );
   }
 }

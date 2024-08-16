@@ -5,6 +5,7 @@ import 'package:melomix/presentation/cubits/song_state.dart';
 
 class SongCubit extends Cubit<SongState> {
   final ApiServices apiServices;
+    List<Song> _allSongs = [];
 
   SongCubit({required this.apiServices}) : super(SongInitial());
 
@@ -52,6 +53,13 @@ class SongCubit extends Cubit<SongState> {
     }
   }
 
-  
+  void searchSongs(String query) {
+    final filteredSongs = _allSongs.where((song) {
+      return song.title.toLowerCase().contains(query.toLowerCase());
+    }).toList();
+    emit(SongSuccess(songs: filteredSongs));
+  }
+
+
 
 }

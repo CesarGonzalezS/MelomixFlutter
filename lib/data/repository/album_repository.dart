@@ -7,22 +7,20 @@ class AlbumRepository {
 
   AlbumRepository({required this.apiUrl});
 
-  //To create we are gonna use an async method, like this one
   Future<void> createAlbum(Album album) async {
     final response = await http.post(
-      Uri.parse('$apiUrl/create_albums'), // Asegúrate de tener la URL correcta
+      Uri.parse('$apiUrl/create_albums'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(album.toMap()..remove('albumId')),
+      body: jsonEncode(album.toMap()..remove('album_id')), // Si el id es null, no lo incluimos
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to create album failed, check line 21');
+      throw Exception('Failed to create album. Status code: ${response.statusCode}');
     }
   }
 
-  //Ahora metodo para obtener todos los albunes
   Future<List<Album>> getAllAlbums() async {
     final response = await http.get(
       Uri.parse('$apiUrl/get_all_albums'),
@@ -30,41 +28,46 @@ class AlbumRepository {
         'Content-Type': 'application/json; charset=UTF-8',
       },
     );
-    //We have yo validate the repsonse to get all the albums
-    if(response.statusCode == 200){
+
+    if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body);
       return jsonResponse.map((album) => Album.fromJson(album)).toList();
-    }else{
-    throw Exception('Failed to load albums check line38');
+    } else {
+      throw Exception('Failed to load albums. Status code: ${response.statusCode}');
     }
   }
 
-  //Now, we are gonna do the update
-  Future<void> updateAlbum(Album album) async{
+  Future<void> updateAlbum(Album album) async {
     final response = await http.put(
-      Uri.parse('$apiUrl/update_album/${album.albumId}'),
+      Uri.parse('$apiUrl/update_album'), // URL sin albumId
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(album.toMap()),
+      body: jsonEncode({
+        'album_id': album.albumId,
+        'title': album.title,
+        'release_date': album.releaseDate.toIso8601String().split('T')[0],
+        'artist_id': album.artistId,
+      }),
     );
-    //We validate the response to get an error if it exists
-    if(response.statusCode != 200){
-      throw Exception("Its an error updating the album, please check it line53");
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to update album. Status code: ${response.statusCode}');
     }
   }
 
-  //To finally, we need to delete an album using the id
-  Future<void> deleteAlbum(int albumId) async{
+
+  Future<void> deleteAlbum(int albumId) async {
     final response = await http.delete(
       Uri.parse('$apiUrl/delete_album/$albumId'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-      }
+      },
     );
-    //And validate again
-    if(response.statusCode != 200){
-      throw Exception("Failed to delete the album, check line67");
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete album. Status code: ${response.statusCode}');
     }
   }
 }
+
