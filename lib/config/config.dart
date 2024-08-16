@@ -32,7 +32,7 @@ class Config {
     static const String deleteUserEndpoint = userApiUrl + '/delete_user';
 
     // Artists
-    static const String getAllArtistEndpoint = artistApiUrl + '/read_all_artists';
+    static const String getAllArtistEndpoint = artistApiUrl + '/read_all_artist';
     static const String getArtistEndpoint = artistApiUrl + '/read_artist';
     static const String postArtistEndpoint = artistApiUrl + '/create_artist';
     static const String putArtistEndpoint = artistApiUrl + '/update_artist';
