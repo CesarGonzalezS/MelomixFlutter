@@ -21,6 +21,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
+          backgroundColor: Colors.black,
           content: Text(message),
           actions: <Widget>[
             TextButton(
@@ -36,7 +37,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
     );
   }
 
-  void _verifyCode(BuildContext context) async {
+  void _verifyCode(BuildContext context, String usernamed) async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -44,7 +45,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
       });
 
       // Recupera el username de SharedPreferences
-      final String? username = StorageService().username;
+      final String username = Get.arguments?['username'] ?? StorageService().username ?? 'Usuario';
 
       // Imprime el username y el código de verificación
       print('Username: $username');
@@ -147,7 +148,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                           padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                           textStyle: TextStyle(fontSize: 18),
                         ),
-                        onPressed: () => _verifyCode(context),
+                        onPressed: () => _verifyCode(context, username),
                         child: _isLoading
                             ? CircularProgressIndicator()
                             : Text('Verificar'),

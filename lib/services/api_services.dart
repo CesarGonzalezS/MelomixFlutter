@@ -10,7 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiServices {
   // User services
   Future<void> createUser(User_model user) async {
-    print('API createUser called');
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.post(
       Uri.parse(Config.signUpEndpoint),
       headers: <String, String>{
@@ -116,10 +117,13 @@ class ApiServices {
 
   // Song services
   Future<void> createSong(Song song) async {
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.post(
       Uri.parse(Config.postSongEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
       body: jsonEncode(song.toMap()),
     );
@@ -150,10 +154,13 @@ class ApiServices {
   }
 
   Future<void> updateSong(Song song) async {
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.put(
       Uri.parse(Config.putSongEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
       body: jsonEncode(song.toMap()),
     );
@@ -166,10 +173,13 @@ class ApiServices {
   }
 
   Future<void> deleteSong(int songId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.delete(
       Uri.parse(Config.deleteSongEndpoint.replaceAll('{songId}', songId.toString())),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
     );
 
@@ -182,10 +192,13 @@ class ApiServices {
 
   // Album services
   Future<void> createAlbum(Album album) async {
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.post(
       Uri.parse(Config.createAlbumEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
       body: jsonEncode(album.toMap()..remove('album_id')),
     );
@@ -210,10 +223,13 @@ class ApiServices {
   }
 
   Future<void> updateAlbum(Album album) async {
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.put(
       Uri.parse(Config.updateAlbumEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
       body: jsonEncode({
         'album_id': album.albumId,
@@ -229,10 +245,13 @@ class ApiServices {
   }
 
   Future<void> deleteAlbum(int albumId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.delete(
       Uri.parse(Config.deleteAlbumEndpoint + '/$albumId'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
     );
     if (response.statusCode != 200) {
@@ -242,11 +261,13 @@ class ApiServices {
 
   // Artist services
   Future<void> createArtist(Artist artist) async {
-    print('API createArtist called');
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.post(
       Uri.parse(Config.postArtistEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
       body: jsonEncode(artist.toMap()..remove('artistId')),
     );
@@ -257,10 +278,13 @@ class ApiServices {
   }
 
   Future<List<Artist>> getAllArtists() async {
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.get(
       Uri.parse(Config.getAllArtistEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken != '' ? 'Bearer $idToken' : '',
       },
     );
 
@@ -273,10 +297,13 @@ class ApiServices {
   }
 
   Future<void> updateArtist(Artist artist) async {
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.put(
       Uri.parse(Config.putArtistEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
       body: jsonEncode({
         'artistId': artist.artistId,
@@ -292,11 +319,13 @@ class ApiServices {
   }
 
   Future<void> deleteArtist(int artistId) async {
-    print('API deleteArtist called with artistId=$artistId');
+    final prefs = await SharedPreferences.getInstance();
+    final idToken = prefs.getString('id_token');
     final response = await http.delete(
       Uri.parse(Config.deleteArtistEndpoint.replaceAll('{artistId}', artistId.toString())),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': idToken ?? '',
       },
     );
 
