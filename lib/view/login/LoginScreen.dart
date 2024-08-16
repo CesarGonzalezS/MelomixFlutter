@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/services/api_services.dart';
+import 'package:melomix/services/storage_service.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -50,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 350), // Ancho ligeramente mayor para los inputs
+                          constraints: BoxConstraints(maxWidth: 350), // Ancho para los inputs
                           child: _buildUsernameField(),
                         ),
                         SizedBox(height: 15),
@@ -60,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(height: 20),
                         ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 250), // Ancho ligeramente mayor para el botón
+                          constraints: BoxConstraints(maxWidth: 250), // Ancho para el botón
                           child: _buildLoginButton(),
                         ),
                       ],
@@ -145,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: Text(
               'Iniciar Sesión',
-              style: TextStyle(fontSize: 20, color: Colors.white,),
+              style: TextStyle(fontSize: 20, color: Colors.white),
             ),
           );
   }

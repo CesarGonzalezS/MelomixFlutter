@@ -1,55 +1,51 @@
 import 'package:bloc/bloc.dart';
-import 'package:melomix/data/model/artist.dart';
+import 'package:melomix/presentation/cubits/artistState.dart';
 
-import 'package:melomix/services/api_services.dart';
-import 'artistState.dart';
+import '../../../data/model/artist.dart';
+import '../../../services/api_services.dart';
 
 class ArtistCubit extends Cubit<ArtistState> {
-  final ApiServices artistServices;
+  final ApiServices apiServices;
 
-  ArtistCubit({required this.artistServices}) : super(ArtistInitial());
+  ArtistCubit({required this.apiServices}) : super(ArtistInitial());
 
-  // Método para crear un nuevo artista
   Future<void> createArtist(Artist artist) async {
     try {
       emit(ArtistLoading());
-      await artistServices.createArtist(artist);
-      List<Artist> updatedArtists = await artistServices.getAllArtists();
+      await apiServices.createArtist(artist);
+      List<Artist> updatedArtists = await apiServices.getAllArtists();
       emit(ArtistSuccess(artists: updatedArtists));
     } catch (e) {
       emit(ArtistError(message: e.toString()));
     }
   }
 
-  // Método para obtener todos los artistas
   Future<void> loadArtists() async {
     try {
       emit(ArtistLoading());
-      List<Artist> artists = await artistServices.getAllArtists();
+      List<Artist> artists = await apiServices.getAllArtists();
       emit(ArtistSuccess(artists: artists));
     } catch (e) {
       emit(ArtistError(message: e.toString()));
     }
   }
 
-  // Método para actualizar un artista
   Future<void> updateArtist(Artist artist) async {
     try {
       emit(ArtistLoading());
-      await artistServices.updateArtist(artist);
-      List<Artist> updatedArtists = await artistServices.getAllArtists();
+      await apiServices.updateArtist(artist);
+      List<Artist> updatedArtists = await apiServices.getAllArtists();
       emit(ArtistSuccess(artists: updatedArtists));
     } catch (e) {
       emit(ArtistError(message: e.toString()));
     }
   }
 
-  // Método para eliminar un artista
   Future<void> deleteArtist(int artistId) async {
     try {
       emit(ArtistLoading());
-      await artistServices.deleteArtist(artistId);
-      List<Artist> updatedArtists = await artistServices.getAllArtists();
+      await apiServices.deleteArtist(artistId);
+      List<Artist> updatedArtists = await apiServices.getAllArtists();
       emit(ArtistSuccess(artists: updatedArtists));
     } catch (e) {
       emit(ArtistError(message: e.toString()));

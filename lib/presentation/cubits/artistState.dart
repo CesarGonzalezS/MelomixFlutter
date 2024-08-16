@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:melomix/data/model/artist.dart';
+import '../../data/model/artist.dart';
 
 abstract class ArtistState extends Equatable {
   @override
