@@ -13,7 +13,8 @@ class UserCubit extends Cubit<UserState> {
     try {
       emit(UserLoading());
       await apiServices.createUser(user);
-      emit(UserSuccess(users: []));
+      emit(UserSuccess(users: [])); // Emitir éxito en caso de registro exitoso
+      print('User successfully created and UserSuccess emitted');
     } catch (e) {
       print('Error in createUser: $e'); // Log de error
       emit(UserError(message: e.toString()));
