@@ -1,6 +1,6 @@
-// email_verification.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:melomix/routes.dart';
 
 class EmailVerificationScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -20,7 +20,7 @@ class EmailVerificationScreen extends StatelessWidget {
               child: Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
-                Get.offNamed('/login');
+                Get.offNamed(AppRoutes.login); // Redirige a la pantalla de inicio de sesión
               },
             ),
           ],
@@ -34,7 +34,8 @@ class EmailVerificationScreen extends StatelessWidget {
       _isLoading = true;
       _errorMessage = '';
 
-      await Future.delayed(Duration(seconds: 2)); // Simula la verificación
+      // Simula la verificación
+      await Future.delayed(Duration(seconds: 2));
 
       _isLoading = false;
 
