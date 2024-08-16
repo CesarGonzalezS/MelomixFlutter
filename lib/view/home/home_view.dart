@@ -8,6 +8,7 @@ import 'package:melomix/presentation/cubits/album/albumState.dart';
 import 'package:melomix/presentation/cubits/song_cubit.dart';
 import 'package:melomix/presentation/cubits/song_state.dart';
 import 'package:melomix/services/api_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -19,37 +20,79 @@ class _HomeViewState extends State<HomeView> {
 
   final List<Widget> _pages = [
     HomePage(),  // Asumiendo que tienes una HomePage
-    SearchPage(), // Asumiendo que tienes una SearchPage
   ];
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
     setState(() {
       _selectedIndex = index;
     });
+
+    if (index == 1) {
+      Get.toNamed(AppRoutes.search); // Navega a la pantalla de búsqueda
+    }
+    if (index == 0) {
+      Get.toNamed(AppRoutes.home); // Navega a la pantalla de inicio
+    }
+    if (index == 2) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      //navigate to home and remove all previos routes on Navigator
+      Get.offAllNamed(AppRoutes.home);   
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        backgroundColor: Colors.grey[800], // Fondo gris del BottomNavigationBar
-        selectedItemColor: Colors.white, // Color del ítem seleccionado
-        unselectedItemColor: Colors.grey[400], // Color del ítem no seleccionado
-        onTap: _onItemTapped,
+      body: _pages[0],
+      bottomNavigationBar: FutureBuilder<String?>(
+        future: _getIdTokem(),
+        builder: (context, snapshot) {
+          List<BottomNavigationBarItem> items = [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.search),
+              label: 'Search',
+            ),
+          ];
+
+          // Conditionally add the logout button if the user is logged in
+          if (snapshot.hasData && snapshot.data != null) {
+            items.add(
+              BottomNavigationBarItem(
+                icon: Icon(Icons.logout),
+                label: 'Logout',
+              ),
+            );
+          }
+
+          return BottomNavigationBar(
+            items: items,
+            currentIndex: _selectedIndex,
+            backgroundColor: Colors.grey[800], // Fondo gris del BottomNavigationBar
+            selectedItemColor: Colors.blue, // Color del ítem seleccionado
+            unselectedItemColor: Colors.grey[400], // Color del ítem no seleccionado
+            onTap: _onItemTapped,
+          );
+        },
       ),
     );
+  }
+
+
+  Future<String?> _getIdTokem() async {
+    final prefs = await SharedPreferences.getInstance();
+    print('ID Token: ${prefs.getString('id_token')}');
+
+    if (prefs.getString('id_token') == null) {
+      return null;
+    }
+
+
+    return prefs.getString('id_token');
   }
 }
 
@@ -148,11 +191,23 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               pinned: true,
+
               actions: [
-                IconButton(
-                  icon: Icon(Icons.person_add),
-                  onPressed: () {
-                    Get.toNamed(AppRoutes.login); // Navega a la pantalla de login
+                FutureBuilder<String?>(
+                  future: _getIdToken(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator(); // Optional: Show a loading indicator while waiting
+                    } else if (snapshot.data == null) {
+                      return IconButton(
+                        icon: Icon(Icons.person_add),
+                        onPressed: () {
+                          Get.toNamed(AppRoutes.login); // Navigate to the login screen
+                        },
+                      );
+                    } else {
+                      return SizedBox.shrink(); // Hide the button if there's no idToken
+                    }
                   },
                 ),
               ],
@@ -460,13 +515,16 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-}
 
-class SearchPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Search Page'),
-    );
+  Future<String?> _getIdToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    print('ID Token: ${prefs.getString('id_token')}');
+
+    if (prefs.getString('id_token') == null) {
+      return null;
+    }
+
+
+    return prefs.getString('id_token');
   }
 }

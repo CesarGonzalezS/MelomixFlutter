@@ -85,15 +85,7 @@ class RegisterScreen extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            ConstrainedBox(
-                              constraints: BoxConstraints(maxWidth: 350),
-                              child: _buildTextField(
-                                controller: _usernameController,
-                                labelText: 'Nombre de Usuario',
-                                validator: (value) =>
-                                    value!.isEmpty ? 'El nombre de usuario es requerido' : null,
-                              ),
-                            ),
+                            
                             SizedBox(height: 15),
                             ConstrainedBox(
                               constraints: BoxConstraints(maxWidth: 350),
@@ -145,7 +137,7 @@ class RegisterScreen extends StatelessWidget {
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
                                     final user = User_model(
-                                      username: _usernameController.text,
+                                      username: _emailController.text,
                                       email: _emailController.text,
                                       password: _passwordController.text,
                                       dateJoined: DateTime.now().toIso8601String(),

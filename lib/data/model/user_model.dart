@@ -38,10 +38,20 @@ class User_model {
   // Convertir de una instancia de User_model a un mapa para enviar al servidor
   Map<String, dynamic> toMap() {
     return {
-      'username': username,
+      'username': email,
       'email': email,
       'password': password,
       'dateJoined': dateJoined,
     };
+  }
+
+  setUsername(String username) {
+    return User_model(
+      userId: userId,
+      username: username,
+      email: email,
+      password: password,
+      dateJoined: dateJoined,
+    );
   }
 }

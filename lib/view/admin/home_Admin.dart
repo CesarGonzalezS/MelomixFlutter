@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:melomix/routes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeAdmin extends StatefulWidget {
   @override
@@ -11,7 +12,7 @@ class HomeAdmin extends StatefulWidget {
 class _HomeAdminState extends State<HomeAdmin> {
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index) async {
     setState(() {
       _selectedIndex = index;
     });
@@ -27,13 +28,10 @@ class _HomeAdminState extends State<HomeAdmin> {
         Get.toNamed(AppRoutes.songs);
         break;
       case 3:
-        Get.toNamed(AppRoutes.adminCrud);
-        break;
-      case 4:
-        Get.toNamed(AppRoutes.favorites);
-        break;
-      case 5:
-        Navigator.of(context).pop(); // Regresa al login al cerrar sesión
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.clear();
+        //navigate to home and remove all previos routes on Navigator
+        Get.offAllNamed(AppRoutes.home);   
         break;
     }
   }
@@ -65,20 +63,12 @@ class _HomeAdminState extends State<HomeAdmin> {
             label: 'Songs',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.admin_panel_settings),
-            label: 'Admin',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.logout),
             label: 'Salir',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.black,
         onTap: _onItemTapped,
