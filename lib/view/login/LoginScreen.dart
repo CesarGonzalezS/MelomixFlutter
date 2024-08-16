@@ -197,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
         String? userGroup = prefs.getString('user_group');
 
         if (userGroup == 'admin') {
-          Get.toNamed(AppRoutes.admin);
+          Get.toNamed(AppRoutes.homeadmin);
         } else {
           Get.toNamed(AppRoutes.home);
         }
