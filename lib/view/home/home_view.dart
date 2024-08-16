@@ -9,11 +9,15 @@ import 'package:melomix/services/api_services.dart';
 
 class HomeView extends StatelessWidget {
   final List<String> albumImages = [
-    'assets/img/music3.jpg',
-    'assets/img/music1.png',
-    'assets/img/music2.png',
-    'assets/img/music4.png',
-    'assets/img/music5.png',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img1.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img2.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img3.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img4.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img5.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img6.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img7.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img/img8.jpg',
+    // Puedes agregar más URLs si lo necesitas
   ];
 
   HomeView({Key? key}) : super(key: key);
@@ -83,7 +87,7 @@ class HomeView extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: Image.asset(
+                            child: Image.network(
                               albumImages[index],
                               fit: BoxFit.cover,
                             ),
@@ -140,10 +144,10 @@ class HomeView extends StatelessWidget {
                     }
                     return SliverGrid(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3, // Número de columnas en la cuadrícula (Ajuste de tamaño)
+                        crossAxisCount: 4, // Mostrar 4 tarjetas por fila
                         crossAxisSpacing: 12.0,
                         mainAxisSpacing: 12.0,
-                        childAspectRatio: 2 / 3, // Relación de aspecto más pequeña
+                        childAspectRatio: 1 / 1.5, // Relación de aspecto ajustada para tarjetas más pequeñas
                       ),
                       delegate: SliverChildBuilderDelegate(
                             (context, index) {
@@ -165,13 +169,11 @@ class HomeView extends StatelessWidget {
                                     Expanded(
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(10.0),
-                                        child: Image.asset(
-                                          'assets/img/default_album.png', // Imagen por defecto del álbum
+                                        child: Image.network(
+                                          albumImages[index], // Cargar imágenes desde AWS
                                           fit: BoxFit.cover,
                                           width: double.infinity,
                                         ),
-                                        // Aquí es donde cargarás las imágenes desde AWS
-                                        // Ejemplo: Image.network(album.imageUrl, ...)
                                       ),
                                     ),
                                     SizedBox(height: 8),
@@ -179,7 +181,7 @@ class HomeView extends StatelessWidget {
                                       album.title,
                                       style: TextStyle(
                                         color: Colors.white,
-                                        fontSize: 14, // Tamaño de texto reducido
+                                        fontSize: 12, // Tamaño de texto más pequeño
                                         fontWeight: FontWeight.bold,
                                       ),
                                       maxLines: 1,
@@ -190,7 +192,7 @@ class HomeView extends StatelessWidget {
                                       'Release Date: ${album.releaseDate.toLocal().toString().split(' ')[0]}',
                                       style: TextStyle(
                                         color: Colors.white70,
-                                        fontSize: 12,
+                                        fontSize: 10,
                                       ),
                                     ),
                                   ],
@@ -199,7 +201,7 @@ class HomeView extends StatelessWidget {
                             ),
                           );
                         },
-                        childCount: albums.length,
+                        childCount: albums.length > 8 ? 8 : albums.length, // Mostrar solo 8 álbumes
                       ),
                     );
                   } else if (state is AlbumError) {
@@ -222,6 +224,42 @@ class HomeView extends StatelessWidget {
                     );
                   }
                 },
+              ),
+            ),
+            // Footer bonito
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'MelonMix',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'La mejor música a tu alcance. Conéctate, escucha, disfruta.',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
+                      '© 2024 MelonMix. Todos los derechos reservados.',
+                      style: TextStyle(
+                        color: Colors.white38,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
