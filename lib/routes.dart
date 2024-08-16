@@ -13,6 +13,7 @@ import 'package:melomix/view/admin/admin_screen.dart';
 import 'package:melomix/view/admin/favorites_screen.dart';
 import 'package:melomix/view/home/home_view.dart';
 import 'package:melomix/middleware/auth_middleware.dart';
+import 'package:melomix/view/search/search_screen.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -22,12 +23,15 @@ class AppRoutes {
   static const String passwordRecovery = '/passwordRecovery';
   static const String emailVerification = '/emailVerification';
   static const String login = '/login';
+  static const String search = '/search';
   static const String homeadmin = '/homeadmin';
   static const String albums = '/albums';
   static const String artists = '/artists';
   static const String songs = '/songs';
   static const String adminCrud = '/adminCrud';
   static const String favorites = '/favorites';
+
+
 
   static final List<GetPage> routes = [
     GetPage(
@@ -55,6 +59,15 @@ class AppRoutes {
       name: login,
       page: () => LoginScreen(),
     ),
+
+    GetPage(
+      name: search,
+      page: () => SearchScreen(),
+    ),
+
+
+
+
     GetPage(
       name: AppRoutes.homeadmin,
       page: () => HomeAdmin(),
