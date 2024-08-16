@@ -27,14 +27,14 @@ class _AddSongScreenState extends State<AddSongScreen> {
 
   void _saveSong() {
     final title = _titleController.text;
-    final duration = _durationController.text;
+    final duration = int.tryParse(_durationController.text) ?? 0; // Convertimos String a int
     final artistId = int.tryParse(_artistIdController.text) ?? 0;
     final genre = _genreController.text;
     final albumId = int.tryParse(_albumIdController.text);
 
     final song = Song(
       title: title,
-      duration: duration,
+      duration: duration, // Ahora es un int
       artistId: artistId,
       genre: genre,
       albumId: albumId,
@@ -61,7 +61,8 @@ class _AddSongScreenState extends State<AddSongScreen> {
             ),
             TextField(
               controller: _durationController,
-              decoration: InputDecoration(labelText: 'Duration'),
+              decoration: InputDecoration(labelText: 'Duration (seconds)'), // Indicamos que es en segundos
+              keyboardType: TextInputType.number, // Solo números
             ),
             TextField(
               controller: _artistIdController,

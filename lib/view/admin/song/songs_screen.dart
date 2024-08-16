@@ -7,7 +7,6 @@ import 'package:melomix/data/model/song_model.dart';
 import 'package:melomix/view/admin/song/add_song_screen.dart';
 import 'package:melomix/view/admin/song/edit_song_screen.dart';
 import 'package:melomix/view/admin/song/delete_song_screen.dart';
-import 'package:melomix/data/model/song_model.dart';
 
 class SongsScreen extends StatefulWidget {
   @override
@@ -44,16 +43,14 @@ class _SongsScreenState extends State<SongsScreen> {
                 final song = state.songs[index];
                 return ListTile(
                   title: Text(song.title),
-                  subtitle: Text('Genre: ${song.genre} | Duration: ${song.duration}'),
+                  subtitle: Text('Genre: ${song.genre} | Duration: ${song.duration} seconds'),
                   trailing: IconButton(
                     icon: Icon(Icons.delete),
-                    onPressed: () {
-                      context.read<SongCubit>().deleteSong(song.songId!);
-                    },
+                    onPressed: () => _confirmDelete(song.songId!),
                   ),
                   onTap: () {
                     _titleController.text = song.title;
-                    _durationController.text = song.duration;
+                    _durationController.text = song.duration.toString(); // Convertimos int a String
                     _albumIdController.text = song.albumId?.toString() ?? '';
                     _artistIdController.text = song.artistId.toString();
                     _genreController.text = song.genre;
@@ -69,7 +66,7 @@ class _SongsScreenState extends State<SongsScreen> {
                               final updatedSong = Song(
                                 songId: song.songId,
                                 title: _titleController.text,
-                                duration: _durationController.text,
+                                duration: int.parse(_durationController.text), // Convertimos String a int
                                 albumId: _albumIdController.text.isEmpty
                                     ? null
                                     : int.tryParse(_albumIdController.text),
@@ -111,7 +108,7 @@ class _SongsScreenState extends State<SongsScreen> {
                   onPressed: () {
                     final newSong = Song(
                       title: _titleController.text,
-                      duration: _durationController.text,
+                      duration: int.parse(_durationController.text), // Convertimos String a int
                       albumId: _albumIdController.text.isEmpty
                           ? null
                           : int.tryParse(_albumIdController.text),
@@ -146,7 +143,8 @@ class _SongsScreenState extends State<SongsScreen> {
         ),
         TextField(
           controller: _durationController,
-          decoration: InputDecoration(labelText: 'Duration'),
+          decoration: InputDecoration(labelText: 'Duration (seconds)'), // Añadido para claridad
+          keyboardType: TextInputType.number, // Asegura que solo números puedan ser ingresados
         ),
         TextField(
           controller: _albumIdController,
@@ -172,5 +170,28 @@ class _SongsScreenState extends State<SongsScreen> {
     _albumIdController.clear();
     _artistIdController.clear();
     _genreController.clear();
+  }
+
+  void _confirmDelete(int songId) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Song'),
+        content: Text('Are you sure you want to delete this song?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              context.read<SongCubit>().deleteSong(songId);
+              Navigator.of(context).pop();
+            },
+            child: Text('Delete'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancel'),
+          ),
+        ],
+      ),
+    );
   }
 }

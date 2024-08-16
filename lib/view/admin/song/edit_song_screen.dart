@@ -23,7 +23,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.song.title);
-    _durationController = TextEditingController(text: widget.song.duration);
+    _durationController = TextEditingController(text: widget.song.duration.toString()); // Convertimos duration a String para el TextField
     _artistIdController = TextEditingController(text: widget.song.artistId.toString());
     _genreController = TextEditingController(text: widget.song.genre);
     _albumIdController = TextEditingController(text: widget.song.albumId?.toString() ?? '');
@@ -41,7 +41,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
 
   void _updateSong() {
     final title = _titleController.text;
-    final duration = _durationController.text;
+    final duration = int.tryParse(_durationController.text) ?? 0; // Convertimos String a int
     final artistId = int.tryParse(_artistIdController.text) ?? 0;
     final genre = _genreController.text;
     final albumId = int.tryParse(_albumIdController.text);
@@ -49,7 +49,7 @@ class _EditSongScreenState extends State<EditSongScreen> {
     final updatedSong = Song(
       songId: widget.song.songId, // Mantén el ID actual para actualizar
       title: title,
-      duration: duration,
+      duration: duration, // Ahora es un int
       artistId: artistId,
       genre: genre,
       albumId: albumId,
@@ -76,7 +76,8 @@ class _EditSongScreenState extends State<EditSongScreen> {
             ),
             TextField(
               controller: _durationController,
-              decoration: InputDecoration(labelText: 'Duration'),
+              decoration: InputDecoration(labelText: 'Duration (seconds)'), // Indicamos que es en segundos
+              keyboardType: TextInputType.number, // Solo números
             ),
             TextField(
               controller: _artistIdController,
