@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/presentation/cubits/album/albumCubit.dart';
 import 'package:melomix/presentation/cubits/album/albumState.dart';
+import 'package:melomix/presentation/cubits/song_cubit.dart';
+import 'package:melomix/presentation/cubits/song_state.dart';
 import 'package:melomix/services/api_services.dart';
 
 class HomeView extends StatefulWidget {
@@ -67,19 +69,48 @@ class HomePage extends StatelessWidget {
     'https://melomix.s3.us-east-2.amazonaws.com/img/img12.jpg',
   ];
 
+  final List<String> songImages = [
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica1.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica2.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica3.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica4.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica5.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica6.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica7.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica8.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/music8.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica10.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica11.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica12.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica13.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica14.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica15.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica17.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica18.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica19.jpg',
+    'https://melomix.s3.us-east-2.amazonaws.com/img_songs/musica20.jpg',
+  ];
+
   HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AlbumCubit(apiServices: ApiServices())..loadAlbums(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AlbumCubit(apiServices: ApiServices())..loadAlbums(),
+        ),
+        BlocProvider(
+          create: (context) => SongCubit(apiServices: ApiServices())..getAllSongs(),
+        ),
+      ],
       child: Scaffold(
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
               expandedHeight: 250.0,
               flexibleSpace: FlexibleSpaceBar(
-                title: Text('Good Morning'),
+                title: Text('MeloMix'),
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
@@ -130,10 +161,40 @@ class HomePage extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 16.0),
+                    Text(
+                      'Bienvenido a MelonMix',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 8.0),
+                    Text(
+                      'Explora el mejor buscador de las canciones más escuchadas en el mundo',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white70,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 32.0),
+                  ],
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Featured Playlist',
+                      'Canciones favoritas del momento',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -141,49 +202,106 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 16.0),
-                    CarouselSlider.builder(
-                      itemCount: albumImages.length,
-                      itemBuilder: (context, index, realIndex) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8.0),
-                            child: Image.network(
-                              albumImages[index],
-                              fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    value: loadingProgress.expectedTotalBytes != null
-                                        ? loadingProgress.cumulativeBytesLoaded /
-                                            loadingProgress.expectedTotalBytes!
-                                        : null,
+                    BlocBuilder<SongCubit, SongState>(
+                      builder: (context, state) {
+                        if (state is SongLoading) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (state is SongSuccess) {
+                          return CarouselSlider.builder(
+                            itemCount: state.songs.length,
+                            itemBuilder: (context, index, realIndex) {
+                              final song = state.songs[index];
+                              return Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Expanded(
+                                        child: Image.network(
+                                          songImages[index % songImages.length],
+                                          fit: BoxFit.cover,
+                                          width: double.infinity,
+                                          height: 250, // Ajuste de altura para hacer las canciones más largas
+                                          loadingBuilder: (context, child, loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress.expectedTotalBytes != null
+                                                    ? loadingProgress.cumulativeBytesLoaded /
+                                                        loadingProgress.expectedTotalBytes!
+                                                    : null,
+                                              ),
+                                            );
+                                          },
+                                          errorBuilder: (context, error, stackTrace) {
+                                            return Icon(Icons.error, color: Colors.red);
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(height: 8),
+                                      Text(
+                                        song.title,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                      Text(
+                                        'Duración: ${song.duration}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                      Text(
+                                        'El género es: ${song.genre}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.white70,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(Icons.error, color: Colors.red);
-                              },
+                                ),
+                              );
+                            },
+                            options: CarouselOptions(
+                              height: 260, // Altura del carrusel ajustada para canciones más largas
+                              viewportFraction: 0.3,
+                              enlargeCenterPage: true,
+                              autoPlay: true,
+                              autoPlayInterval: Duration(seconds: 3),
+                              autoPlayAnimationDuration: Duration(milliseconds: 800),
+                              scrollDirection: Axis.horizontal,
+                              enlargeStrategy: CenterPageEnlargeStrategy.scale,
+                              enableInfiniteScroll: true,
                             ),
-                          ),
-                        );
+                          );
+                        } else if (state is SongError) {
+                          return Center(
+                            child: Text(
+                              'Error al cargar las canciones: ${state.message}',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          );
+                        } else {
+                          return Center(
+                            child: Text(
+                              'No hay canciones disponibles.',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }
                       },
-                      options: CarouselOptions(
-                        height: 220,
-                        viewportFraction: 0.3,
-                        enlargeCenterPage: true,
-                        autoPlay: true,
-                        autoPlayInterval: Duration(seconds: 3),
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        scrollDirection: Axis.horizontal,
-                        enlargeStrategy: CenterPageEnlargeStrategy.scale,
-                        enableInfiniteScroll: true,
-                      ),
                     ),
                     SizedBox(height: 16.0),
                     Text(
-                      'Recently Played',
+                      'Los álbumes disponibles más conocidos',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -194,6 +312,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
+            // Sección para mostrar las tarjetas de álbumes
             SliverPadding(
               padding: const EdgeInsets.all(16.0),
               sliver: BlocBuilder<AlbumCubit, AlbumState>(
@@ -244,7 +363,7 @@ class HomePage extends StatelessWidget {
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(10.0),
                                         child: Image.network(
-                                          albumImages[index], // Cargar imágenes desde AWS
+                                          albumImages[index % albumImages.length], // Cargar imágenes desde AWS
                                           fit: BoxFit.cover,
                                           width: double.infinity,
                                         ),
@@ -263,7 +382,7 @@ class HomePage extends StatelessWidget {
                                     ),
                                     SizedBox(height: 4),
                                     Text(
-                                      'Release Date: ${album.releaseDate.toLocal().toString().split(' ')[0]}',
+                                      'Se creó el: ${album.releaseDate.toLocal().toString().split(' ')[0]}',
                                       style: TextStyle(
                                         color: Colors.white70,
                                         fontSize: 10,
@@ -300,6 +419,7 @@ class HomePage extends StatelessWidget {
                 },
               ),
             ),
+            // Footer bonito
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 32.0),
@@ -315,7 +435,7 @@ class HomePage extends StatelessWidget {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      'La mejor música a tu alcance. Conéctate, escucha, disfruta.',
+                      'El mejor gestor de música a tu alcance. Regístrate y pruébala!',
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
