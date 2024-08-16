@@ -8,10 +8,11 @@ import '../data/model/albums.dart'; // Importación de álbumes
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiServices {
+  // User services
   Future<void> createUser(User_model user) async {
     print('API createUser called');
     final response = await http.post(
-      Uri.parse(Config.sing_upEndpoint),
+      Uri.parse(Config.signUpEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -89,7 +90,7 @@ class ApiServices {
     await prefs.setString('user_group', userGroup);
   }
 
-  // Servicios para las canciones
+  // Song services
   Future<void> createSong(Song song) async {
     final response = await http.post(
       Uri.parse(Config.postSongEndpoint),
@@ -155,18 +156,17 @@ class ApiServices {
     }
   }
 
+  // Album services
   Future<void> createAlbum(Album album) async {
     final response = await http.post(
       Uri.parse(Config.createAlbumEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(album.toMap()),
+      body: jsonEncode(album.toMap()..remove('album_id')),
     );
-    if (response.statusCode == 200) {
-      print('Album created successfully');
-    } else {
-      throw Exception('Failed to create album');
+    if (response.statusCode != 200) {
+      throw Exception('Failed to create album. Status code: ${response.statusCode}');
     }
   }
 
@@ -181,20 +181,26 @@ class ApiServices {
       List<dynamic> jsonResponse = jsonDecode(response.body);
       return jsonResponse.map((album) => Album.fromJson(album)).toList();
     } else {
-      throw Exception('Failed to get all albums');
+      throw Exception('Failed to get all albums. Status code: ${response.statusCode}');
     }
   }
 
   Future<void> updateAlbum(Album album) async {
     final response = await http.put(
-      Uri.parse(Config.updateAlbumEndpoint + '/${album.albumId}'),
+      Uri.parse(Config.updateAlbumEndpoint),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(album.toMap()),
+      body: jsonEncode({
+        'album_id': album.albumId,
+        'title': album.title,
+        'release_date': album.releaseDate.toIso8601String().split('T')[0],
+        'artist_id': album.artistId,
+      }),
     );
+
     if (response.statusCode != 200) {
-      throw Exception('Album failed to update');
+      throw Exception('Failed to update album. Status code: ${response.statusCode}');
     }
   }
 
@@ -206,10 +212,11 @@ class ApiServices {
       },
     );
     if (response.statusCode != 200) {
-      throw Exception('Album failed to delete');
+      throw Exception('Failed to delete album. Status code: ${response.statusCode}');
     }
   }
 
+  // Artist services
   Future<void> createArtist(Artist artist) async {
     print('API createArtist called');
     final response = await http.post(
