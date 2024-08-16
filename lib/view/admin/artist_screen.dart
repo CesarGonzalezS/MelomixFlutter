@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:melomix/data/model/artist.dart';
-import 'package:melomix/data/repository/artist_repository.dart';
+import 'package:melomix/presentation/cubits/artistCubit.dart';
+import 'package:melomix/presentation/cubits/artistState.dart';
 
 class ArtistScreen extends StatefulWidget {
   @override
@@ -8,133 +10,246 @@ class ArtistScreen extends StatefulWidget {
 }
 
 class _ArtistScreenState extends State<ArtistScreen> {
-  late ArtistRepository artistRepository;
-  late Future<List<Artist>> artistsFuture;
-
-  final _formKey = GlobalKey<FormState>();
-  String _name = '';
-  String _genre = '';
-  String _bio = '';
+  // Definir un GlobalKey para el ScaffoldMessenger
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
     super.initState();
-    artistRepository = ArtistRepository(apiUrl: 'https://iubl4o2scl.execute-api.us-east-2.amazonaws.com/Prod');
-    _fetchArtists();
-  }
-
-  void _fetchArtists() {
-    setState(() {
-      artistsFuture = artistRepository.getAllArtists();
-    });
-  }
-
-  void _addArtist() async {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      final newArtist = Artist(
-        artistId: 0, // El backend debería generar el ID automáticamente
-        name: _name,
-        genre: _genre,
-        bio: _bio,
-      );
-      await artistRepository.createArtist(newArtist);
-      _fetchArtists(); // Refresca la lista de artistas después de agregar uno nuevo
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Artist added successfully')),
-      );
-    }
+    // Cargar los artistas al iniciar la pantalla
+    context.read<ArtistCubit>().loadArtists();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: scaffoldMessengerKey,  // Asociar el GlobalKey con el Scaffold
       appBar: AppBar(
-        title: Text('Artists Management'),
+        title: Text('Artists'),
+        centerTitle: true,
+        backgroundColor: Colors.grey[900],
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              _showAddArtistModal(context);
+            },
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Form(
-              key: _formKey,
+      backgroundColor: Colors.black,
+      body: BlocBuilder<ArtistCubit, ArtistState>(
+        builder: (context, state) {
+          if (state is ArtistLoading) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is ArtistSuccess) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columnSpacing: 16,
+                  columns: const [
+                    DataColumn(label: Text('Artist')),
+                    DataColumn(label: Text('Genre')),
+                  ],
+                  rows: state.artists.map((artist) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(
+                          artist.name,
+                          style: TextStyle(color: Colors.white),
+                        )),
+                        DataCell(Text(
+                          artist.genre,
+                          style: TextStyle(color: Colors.grey),
+                        )),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          } else if (state is ArtistError) {
+            return Center(
+              child: Text(
+                'Failed to load artists: ${state.message}',
+                style: TextStyle(color: Colors.red),
+              ),
+            );
+          } else {
+            return Center(
+              child: Text(
+                'No artists available',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  void _showAddArtistModal(BuildContext context) {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController genreController = TextEditingController();
+    TextEditingController bioController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.grey[850],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25.0)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            bool isFormValid = nameController.text.isNotEmpty &&
+                genreController.text.isNotEmpty;
+
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: 16,
+                left: 16,
+                right: 16,
+              ),
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Name'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a name';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _name = value!;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Genre'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a genre';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _genre = value!;
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    onChanged: (_) {
+                      setState(() {
+                        isFormValid = nameController.text.isNotEmpty &&
+                            genreController.text.isNotEmpty;
+                      });
                     },
                   ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Bio'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a bio';
-                      }
-                      return null;
+                  TextField(
+                    controller: genreController,
+                    decoration: InputDecoration(
+                      labelText: 'Genre',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    onChanged: (_) {
+                      setState(() {
+                        isFormValid = nameController.text.isNotEmpty &&
+                            genreController.text.isNotEmpty;
+                      });
                     },
-                    onSaved: (value) {
-                      _bio = value!;
-                    },
+                  ),
+                  TextField(
+                    controller: bioController,
+                    decoration: InputDecoration(
+                      labelText: 'Bio (optional)',
+                      labelStyle: TextStyle(color: Colors.white),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.green),
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
                   ),
                   SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _addArtist,
-                    child: Text('Add Artist'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      TextButton(
+                        onPressed: isFormValid
+                            ? () async {
+                                Navigator.of(context).pop();
+                                await _addArtist(
+                                  context,
+                                  nameController.text,
+                                  genreController.text,
+                                  bioController.text,
+                                );
+                              }
+                            : null,
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            isFormValid ? Colors.green : Colors.green[900],
+                          ),
+                          foregroundColor: MaterialStateProperty.all(
+                            Colors.white,
+                          ),
+                        ),
+                        child: Text('Add'),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: FutureBuilder<List<Artist>>(
-                future: artistsFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return Center(child: Text('No artists found'));
-                  } else {
-                    final artists = snapshot.data!;
-                    return ListView.builder(
-                      itemCount: artists.length,
-                      itemBuilder: (context, index) {
-                        final artist = artists[index];
-                        return ListTile(
-                          title: Text(artist.name),
-                          subtitle: Text('${artist.genre} - ${artist.bio}'),
-                        );
-                      },
-                    );
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
+  }
+
+  Future<void> _addArtist(BuildContext context, String name, String genre, String bio) async {
+    final newArtist = Artist(
+      artistId: '', // Usar cadena vacía en lugar de 0
+      name: name,
+      genre: genre,
+      bio: bio,
+    );
+
+    try {
+      await context.read<ArtistCubit>().createArtist(newArtist);
+
+      // Verificar si el widget está montado antes de mostrar el SnackBar
+      if (mounted) {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text('Artist created successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        scaffoldMessengerKey.currentState?.showSnackBar(
+          SnackBar(
+            content: Text('Failed to create artist: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

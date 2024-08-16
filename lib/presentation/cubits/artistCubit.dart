@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:melomix/data/model/artist.dart';
-
 import 'package:melomix/services/api_services.dart';
 import 'artistState.dart';
 
