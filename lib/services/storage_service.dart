@@ -47,4 +47,3 @@ class StorageService {
     await _prefs.clear(); // Esto borra todos los datos
   }
 }
-

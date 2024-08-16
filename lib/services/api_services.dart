@@ -45,6 +45,30 @@ class ApiServices {
     }
   }
 
+
+  Future<Map<String, dynamic>> verifyEmail(String username, String code) async {
+    final response = await http.post(
+      Uri.parse(Config.emailVerification),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'username': username,
+        'confirmation_code': code,
+      }),
+    );
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      return {'message': 'Verification failed'};
+    }
+  }
+
+
   Future<bool> loginUser(String username, String password) async {
     print('API loginUser called with username=$username and password=$password');
 
