@@ -15,27 +15,20 @@ class AuthMiddleware extends GetMiddleware {
       AppRoutes.favorites,
     ];
 
-    // Obtener preferencias de manera sincrónica
-    SharedPreferences.getInstance().then((prefs) {
-      String? userGroup = prefs.getString('user_group');
+    _checkUserPermissions(route, adminRoutes);
+    return null; // Permitir la navegación por defecto mientras se verifica
+  }
 
-      if (userGroup == null || userGroup.isEmpty) {
-        Get.snackbar('Acceso Denegado', 'Debes iniciar sesión para acceder a esta página.');
-        return RouteSettings(name: AppRoutes.login);
-      }
+  void _checkUserPermissions(String? route, List<String> adminRoutes) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userGroup = prefs.getString('user_group');
 
-      if (userGroup == 'usuario' && adminRoutes.contains(route)) {
-        Get.snackbar('Acceso Denegado', 'No tienes permiso para acceder a esta página.');
-        return RouteSettings(name: AppRoutes.home);
-      }
-
-      if (userGroup == 'admin' && route == AppRoutes.homeadmin) {
-        return null;  // Permitir la navegación a admin
-      }
-
-      return null;
-    });
-
-    return null;  // No realizar ninguna redirección por defecto.
+    if (userGroup == null || userGroup.isEmpty) {
+      Get.snackbar('Acceso Denegado', 'Debes iniciar sesión para acceder a esta página.');
+      Get.offAllNamed(AppRoutes.login);
+    } else if (userGroup == 'usuario' && adminRoutes.contains(route)) {
+      Get.snackbar('Acceso Denegado', 'No tienes permiso para acceder a esta página.');
+      Get.offAllNamed(AppRoutes.home);
+    }
   }
 }

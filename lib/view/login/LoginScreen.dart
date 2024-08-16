@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:melomix/routes.dart';
 import 'package:melomix/services/api_services.dart';
-import 'package:melomix/services/storage_service.dart'; // Importa StorageService
+import 'package:melomix/services/storage_service.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -71,6 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 20),
                   TextFormField(
                     controller: _passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
                       border: OutlineInputBorder(
@@ -86,40 +87,38 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   SizedBox(height: 30),
+                  // Método para iniciar sesión en LoginScreen
                   ElevatedButton(
                     onPressed: () async {
                       if (_formKey.currentState?.validate() ?? false) {
                         String username = _usernameController.text.trim();
                         String password = _passwordController.text.trim();
 
+                        // Intento de inicio de sesión
                         bool loginSuccess = await _apiServices.loginUser(username, password);
 
                         if (loginSuccess) {
                           final storageService = StorageService();
 
-                          // Aquí puedes simular el almacenamiento de los datos
+                          // Almacenar los datos de usuario en SharedPreferences
                           await storageService.saveUserData(
-                            'dummy_id_token',
-                            'dummy_access_token',
-                            'dummy_refresh_token',
-                            'usuario',
+                            'dummy_id_token', // Aquí deberías usar el valor real del id_token
+                            'dummy_access_token', // Aquí deberías usar el valor real del access_token
+                            'dummy_refresh_token', // Aquí deberías usar el valor real del refresh_token
+                            'admin', // Aquí deberías usar el valor real de user_group desde la respuesta
                           );
 
-                          // Imprime los datos almacenados
-                          print('ID Token: ${storageService.idToken}');
-                          print('Access Token: ${storageService.accessToken}');
-                          print('Refresh Token: ${storageService.refreshToken}');
-                          print('User Group: ${storageService.userGroup}');
-
+                          // Recuperar el grupo de usuario para la redirección
                           String? userGroup = storageService.userGroup;
 
+                          // Redirección según el grupo de usuario
                           if (userGroup == 'admin') {
-                            Get.offAllNamed(AppRoutes.homeadmin);
-                            print('Redirigiendo a HomeAdmin');
+                            print('User Group: $userGroup');
+                            Get.offAllNamed(AppRoutes.homeadmin); // Redirige al panel de admin
                           } else if (userGroup == 'usuario') {
-                            Get.offAllNamed(AppRoutes.home);
+                            Get.offAllNamed(AppRoutes.home); // Redirige al home normal
                           } else {
-                            Get.offAllNamed(AppRoutes.home);
+                            Get.offAllNamed(AppRoutes.login); // Redirige al login si el grupo es inválido
                           }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -140,6 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
+
                   SizedBox(height: 20),
                   TextButton(
                     onPressed: () {
