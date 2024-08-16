@@ -25,3 +25,4 @@ class AlbumError extends AlbumState{
   @override
   List<Object?> get props => [message];
 }
+
