@@ -5,8 +5,8 @@ import 'package:melomix/presentation/cubits/user_state.dart';
 import 'package:melomix/services/api_services.dart';
 import 'package:melomix/data/model/user_model.dart';
 import 'package:get/get.dart';
-
 import 'package:melomix/routes.dart';
+import 'package:melomix/services/storage_service.dart';  // Importa el servicio de almacenamiento
 
 class RegisterScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -55,7 +55,7 @@ class RegisterScreen extends StatelessWidget {
                               controller: _usernameController,
                               labelText: 'Nombre de Usuario',
                               validator: (value) =>
-                                  value!.isEmpty ? 'El nombre de usuario es requerido' : null,
+                              value!.isEmpty ? 'El nombre de usuario es requerido' : null,
                             ),
                           ),
                           SizedBox(height: 15),
@@ -65,7 +65,7 @@ class RegisterScreen extends StatelessWidget {
                               controller: _emailController,
                               labelText: 'Correo Electrónico',
                               validator: (value) =>
-                                  value!.isEmpty ? 'Por favor ingrese un email' : null,
+                              value!.isEmpty ? 'Por favor ingrese un email' : null,
                               keyboardType: TextInputType.emailAddress,
                             ),
                           ),
@@ -99,14 +99,14 @@ class RegisterScreen extends StatelessWidget {
                               controller: _confirmPasswordController,
                               labelText: 'Confirmar Contraseña',
                               validator: (value) =>
-                                  value != _passwordController.text ? 'Las contraseñas no coinciden' : null,
+                              value != _passwordController.text ? 'Las contraseñas no coinciden' : null,
                             ),
                           ),
                           SizedBox(height: 30),
                           ConstrainedBox(
                             constraints: BoxConstraints(maxWidth: 250),
                             child: ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   final user = User_model(
                                     username: _usernameController.text,
@@ -114,6 +114,16 @@ class RegisterScreen extends StatelessWidget {
                                     password: _passwordController.text,
                                     dateJoined: DateTime.now().toIso8601String(),
                                   );
+
+                                  // Guarda el username en SharedPreferences
+                                  await StorageService().saveUserCredentials(
+                                    _usernameController.text,
+                                    _passwordController.text,
+                                  );
+
+                                  // Manda al usuario a la pantalla de verificación de email
+                                  Get.toNamed(AppRoutes.emailVerification, arguments: {'username': _usernameController.text});
+
                                   context.read<UserCubit>().createUser(user);
                                 }
                               },
