@@ -102,6 +102,8 @@ class ApiServices {
       },
     );
 
+    print(response);
+
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body);
       return jsonResponse.map((song) => Song.fromJson(song)).toList();

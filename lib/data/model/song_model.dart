@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class Song {
   final int? songId;
   final String title;
@@ -17,11 +19,12 @@ class Song {
 
   // Método fromJson para convertir JSON a una instancia de Song
   factory Song.fromJson(Map<String, dynamic> json) {
+    print(json);
     return Song(
       // Aquí aseguramos que si 'song_id' es String, se convierte a int
       songId: json['song_id'] is int ? json['song_id'] : int.tryParse(json['song_id'] ?? ''),
       title: json['title'] as String,
-      duration: json['duration'] as String,
+      duration: json['/'],
       // Igual para 'album_id' que podría ser nulo
       albumId: json['album_id'] is int ? json['album_id'] : int.tryParse(json['album_id'] ?? ''),
       // Igual para 'artist_id'
