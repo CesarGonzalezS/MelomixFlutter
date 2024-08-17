@@ -176,7 +176,7 @@ class ApiServices {
     final prefs = await SharedPreferences.getInstance();
     final idToken = prefs.getString('id_token');
     final response = await http.delete(
-      Uri.parse(Config.deleteSongEndpoint.replaceAll('{songId}', songId.toString())),
+      Uri.parse(Config.deleteSongEndpoint  + '/$songId'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': idToken ?? '',

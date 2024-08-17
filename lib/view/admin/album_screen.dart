@@ -44,18 +44,18 @@ class _AlbumScreenState extends State<AlbumScreen> {
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4, // Cuatro columnas
-                crossAxisSpacing: 10, // Espacio entre columnas
-                mainAxisSpacing: 10, // Espacio entre filas
-                childAspectRatio: 3 / 4, // Relación de aspecto de las tarjetas
+                crossAxisSpacing: 8, // Espacio entre columnas
+                mainAxisSpacing: 8, // Espacio entre filas
+                childAspectRatio: 2 / 3, // Relación de aspecto más pequeña
               ),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               itemCount: state.albums.length,
               itemBuilder: (context, index) {
                 final album = state.albums[index];
                 return Card(
                   color: Colors.grey[850],
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: InkWell(
                     onTap: () {
@@ -72,7 +72,7 @@ class _AlbumScreenState extends State<AlbumScreen> {
                                 album.title,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 maxLines: 2,
@@ -288,9 +288,12 @@ class _AlbumScreenState extends State<AlbumScreen> {
   }
 
   void _showEditAlbumModal(BuildContext context, Album album) {
-    TextEditingController titleController = TextEditingController(text: album.title);
-    TextEditingController releaseDateController = TextEditingController(text: album.releaseDate.toIso8601String().split('T')[0]);
-    TextEditingController artistIdController = TextEditingController(text: album.artistId.toString());
+    TextEditingController titleController =
+    TextEditingController(text: album.title);
+    TextEditingController releaseDateController = TextEditingController(
+        text: album.releaseDate.toIso8601String().split('T')[0]);
+    TextEditingController artistIdController =
+    TextEditingController(text: album.artistId.toString());
 
     Future<void> _selectDate(BuildContext context) async {
       final DateTime? picked = await showDatePicker(
@@ -445,17 +448,30 @@ class _AlbumScreenState extends State<AlbumScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("¿Estás seguro?"),
-          content: Text("Estás a punto de eliminar el álbum: ${album.title}."),
+          backgroundColor: Colors.grey[850],
+          title: Text(
+            "¿Estás seguro?",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            "Estás a punto de eliminar el álbum: ${album.title}.",
+            style: TextStyle(color: Colors.white70),
+          ),
           actions: [
             TextButton(
-              child: Text("Cancelar"),
+              child: Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text("Eliminar"),
+              child: Text(
+                "Eliminar",
+                style: TextStyle(color: Colors.green),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 _deleteAlbum(context, album.albumId!);
@@ -467,31 +483,46 @@ class _AlbumScreenState extends State<AlbumScreen> {
     );
   }
 
-  void _showConfirmationModal(
-      BuildContext context, String title, String releaseDate, int artistId, {int? albumId}) {
+  void _showConfirmationModal(BuildContext context, String title,
+      String releaseDate, int artistId,
+      {int? albumId}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("¿Estás seguro?"),
-          content: Text(albumId == null
-              ? "Estás a punto de agregar este álbum: $title."
-              : "Estás a punto de actualizar este álbum: $title."),
+          backgroundColor: Colors.grey[850],
+          title: Text(
+            "¿Estás seguro?",
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            albumId == null
+                ? "Estás a punto de agregar este álbum: $title."
+                : "Estás a punto de actualizar este álbum: $title.",
+            style: TextStyle(color: Colors.white70),
+          ),
           actions: [
             TextButton(
-              child: Text("Cancelar"),
+              child: Text(
+                "Cancelar",
+                style: TextStyle(color: Colors.red),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text("Sí"),
+              child: Text(
+                "Sí",
+                style: TextStyle(color: Colors.green),
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (albumId == null) {
                   _addAlbum(context, title, releaseDate, artistId);
                 } else {
-                  _updateAlbum(context, albumId, title, releaseDate, artistId);
+                  _updateAlbum(
+                      context, albumId, title, releaseDate, artistId);
                 }
               },
             ),
@@ -501,7 +532,8 @@ class _AlbumScreenState extends State<AlbumScreen> {
     );
   }
 
-  void _addAlbum(BuildContext context, String title, String releaseDate, int artistId) {
+  void _addAlbum(
+      BuildContext context, String title, String releaseDate, int artistId) {
     final newAlbum = Album(
       title: title,
       releaseDate: DateTime.parse(releaseDate),
@@ -511,7 +543,8 @@ class _AlbumScreenState extends State<AlbumScreen> {
     context.read<AlbumCubit>().createAlbum(newAlbum);
   }
 
-  void _updateAlbum(BuildContext context, int albumId, String title, String releaseDate, int artistId) {
+  void _updateAlbum(BuildContext context, int albumId, String title,
+      String releaseDate, int artistId) {
     final updatedAlbum = Album(
       albumId: albumId,
       title: title,

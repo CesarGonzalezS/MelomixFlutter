@@ -1,5 +1,6 @@
 class Config {
-    static const String cognitoApiUrl = 'https://l54ncy8pk4.execute-api.us-east-2.amazonaws.com/Prod';    static const String albumApiUrl = 'https://eaeg2uqxz7.execute-api.us-east-2.amazonaws.com/Prod';
+    static const String cognitoApiUrl = 'https://l54ncy8pk4.execute-api.us-east-2.amazonaws.com/Prod';
+    static const String albumApiUrl = 'https://eaeg2uqxz7.execute-api.us-east-2.amazonaws.com/Prod';
     static const String songApiUrl = 'https://6flief1e38.execute-api.us-east-2.amazonaws.com/Prod';
     static const String userApiUrl = 'https://nzjibvj5zh.execute-api.us-east-2.amazonaws.com/Prod';
     static const String artistApiUrl = 'https://ys5fpean17.execute-api.us-east-2.amazonaws.com/Prod';
