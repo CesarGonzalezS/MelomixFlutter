@@ -103286,7 +103286,7 @@ k=J
 s=2
 return A.h(A.ej(),$async$ln)
 case 2:l.bi(k.an(c.a,"id_token"))
-q=A.cs("/sign_up",0,null)
+q=A.cs("https://l54ncy8pk4.execute-api.us-east-2.amazonaws.com/Prod/sign_up",0,null)
 p=t.N
 o=A.a9(["Content-Type","application/json; charset=UTF-8"],p,p)
 n=a.c
@@ -103302,7 +103302,7 @@ return A.m($async$ln,r)},
 Fy(a,b){return this.aCS(a,b)},
 aCS(a,b){var s=0,r=A.n(t.a),q,p,o,n,m,l,k
 var $async$Fy=A.j(function(c,d){if(c===1)return A.k(d,r)
-while(true)switch(s){case 0:n=A.cs("/confirm_sign_up",0,null)
+while(true)switch(s){case 0:n=A.cs("https://l54ncy8pk4.execute-api.us-east-2.amazonaws.com/Prod/confirm_sign_up",0,null)
 m=t.N
 l=A.a9(["Content-Type","application/json; charset=UTF-8"],m,m)
 s=3
@@ -103325,7 +103325,7 @@ ayW(a,b){var s=0,r=A.n(t.y),q,p=2,o,n=this,m,l,k,j,i,h,g,f
 var $async$ys=A.j(function(c,d){if(c===1){o=d
 s=p}while(true)switch(s){case 0:A.cW("API loginUser called with username="+a+" and password="+b)
 p=4
-j=A.cs("/login",0,null)
+j=A.cs("https://l54ncy8pk4.execute-api.us-east-2.amazonaws.com/Prod/login",0,null)
 i=t.N
 h=A.a9(["Content-Type","application/json; charset=UTF-8"],i,i)
 s=7
